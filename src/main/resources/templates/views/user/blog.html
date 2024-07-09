@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+    <h1>Welcome, <span th:text="${user.username}"></span>!</h1>
+    <p>Your email is: <span th:text="${user.email}"></span></p>
+    <p>Your name is: <span th:text="${user.name}"></span></p>
+    <p>Registration date: <span th:text="${user.registrationDate}"></span></p>
+</div>
+</body>
+</html>
