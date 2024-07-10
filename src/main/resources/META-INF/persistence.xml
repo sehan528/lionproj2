@@ -6,9 +6,9 @@
 
     <persistence-unit name="UserPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>org.example.lionproj2.domain.User</class>
-        <class>org.example.lionproj2.domain.Post</class>
-        <class>org.example.lionproj2.domain.Image</class>
+        <class>org.example.lionproj2.entity.User</class>
+        <class>org.example.lionproj2.entity.Post</class>
+        <class>org.example.lionproj2.entity.Image</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
