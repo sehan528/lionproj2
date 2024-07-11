@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recent Posts</title>
+</head>
+<body>
+<h1>Recent Posts</h1>
+<div th:each="post : ${recentPosts}">
+    <h2 th:text="${post.title}">Post Title</h2>
+    <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
+    <p>By <span th:text="${post.userName}">User Name</span></p>
+    <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
+</div>
+</body>
+</html>

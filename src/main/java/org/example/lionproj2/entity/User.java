@@ -35,8 +35,11 @@ public class User {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @OneToMany(mappedBy = "user")
-    private Set<UserPost> userPosts;
+//    @OneToMany(mappedBy = "user")
+//    private Set<UserPost> userPosts;
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Post> posts;
 
     @ManyToMany
     @JoinTable(

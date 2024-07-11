@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trending Posts</title>
+</head>
+<body>
+<h1>Trending Posts</h1>
+<div>
+    <a th:href="@{/vlog.io(period='week')}" th:class="${period == 'week'} ? 'active'">This Week</a>
+    <a th:href="@{/vlog.io(period='month')}" th:class="${period == 'month'} ? 'active'">This Month</a>
+</div>
+<div th:each="post : ${trendingPosts}">
+    <h2 th:text="${post.title}">Post Title</h2>
+    <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
+    <p>By <span th:text="${post.userName}">User Name</span></p>
+    <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
+    <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
+</div>
+</body>
+</html>

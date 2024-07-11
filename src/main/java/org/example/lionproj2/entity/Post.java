@@ -29,8 +29,19 @@ public class Post {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
-    @OneToMany(mappedBy = "post")
-    private Set<UserPost> userPosts;
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
+//    @OneToMany(mappedBy = "post")
+//    private Set<UserPost> userPosts;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_posts",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users;
 
     @ManyToMany
     @JoinTable(
