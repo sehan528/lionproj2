@@ -1,22 +1,16 @@
 package org.example.lionproj2.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import java.util.Set;
+import lombok.*;
 
 @Entity
 @Table(name = "tags")
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
-
-    @ManyToMany(mappedBy = "tags")
-    private Set<Post> posts;
-
 }

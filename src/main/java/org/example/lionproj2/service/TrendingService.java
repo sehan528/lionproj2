@@ -24,7 +24,7 @@ public class TrendingService {
         LocalDateTime startDate = getStartDate(period);
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        return postRepository.findTrendingPosts(startDate, pageRequest)
+        return postRepository.findByIsPrivateFalseAndUpdateDateGreaterThanEqualOrderByLikesDesc(startDate, pageRequest)
                 .stream()
                 .map(postMapper::postToTrendingPostDTO)
                 .collect(Collectors.toList());

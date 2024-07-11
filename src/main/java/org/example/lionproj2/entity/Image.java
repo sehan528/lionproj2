@@ -1,13 +1,11 @@
 package org.example.lionproj2.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import java.util.Set;
+import lombok.*;
 
 @Entity
 @Table(name = "images")
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,8 +13,4 @@ public class Image {
 
     @Column(nullable = false)
     private String url;
-
-    @ManyToMany(mappedBy = "images")
-    private Set<Post> posts;
-
 }

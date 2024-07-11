@@ -1,23 +1,20 @@
 package org.example.lionproj2.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "about_me")
-@Getter @Setter
-
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class AboutMe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     @Column(nullable = false)
     private String context;
-
 }

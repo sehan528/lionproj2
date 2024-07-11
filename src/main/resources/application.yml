@@ -2,7 +2,7 @@ spring:
   application:
     name: lionproj2
   thymeleaf:
-    prefix: classpath:/templates/views/
+    prefix: classpath:/templates/
     suffix: .html
   datasource:
     url: jdbc:mysql://localhost:3306/liondb2

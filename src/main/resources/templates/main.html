@@ -12,7 +12,7 @@
 <div th:each="post : ${trendingPosts}">
     <h2 th:text="${post.title}">Post Title</h2>
     <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-    <p>By <span th:text="${post.userName}">User Name</span></p>
+    <p>By <span th:text="${post.authorName}">Author Name</span></p>
     <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
     <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
 </div>

@@ -21,7 +21,7 @@ public class RecentService {
     public List<RecentPostDTO> getRecentPosts(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        return postRepository.findRecentPosts(pageRequest)
+        return postRepository.findByIsPrivateFalseOrderByCreationDateDesc(pageRequest)
                 .stream()
                 .map(postMapper::postToRecentPostDTO)
                 .collect(Collectors.toList());

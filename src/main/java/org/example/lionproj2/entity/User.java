@@ -1,22 +1,19 @@
 package org.example.lionproj2.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
-
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
 
     @Column(nullable = false)
@@ -25,21 +22,26 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(name = "profile_img")
     private String profileImg;
 
-    private boolean isBan = false;
+    @Column(name = "is_ban")
+    private boolean isBan;
 
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-//    @OneToMany(mappedBy = "user")
-//    private Set<UserPost> userPosts;
-
-    @ManyToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "author")
     private Set<Post> posts;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Like> likes;
+
+    @OneToMany(mappedBy = "user")
+    private Set<RecentView> recentViews;
 
     @ManyToMany
     @JoinTable(
@@ -51,11 +53,4 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private AboutMe aboutMe;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Like> likes;
-
-    @OneToMany(mappedBy = "user")
-    private Set<RecentView> recentViews;
-
 }

@@ -8,7 +8,7 @@
 <div th:each="post : ${recentPosts}">
     <h2 th:text="${post.title}">Post Title</h2>
     <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-    <p>By <span th:text="${post.userName}">User Name</span></p>
+    <p>By <span th:text="${post.authorName}">Author Name</span></p>
     <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
 </div>
 </body>

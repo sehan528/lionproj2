@@ -3,7 +3,6 @@ package org.example.lionproj2.mapper;
 import org.example.lionproj2.dto.RecentPostDTO;
 import org.example.lionproj2.dto.TrendingPostDTO;
 import org.example.lionproj2.entity.Post;
-import org.example.lionproj2.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +13,7 @@ public class PostMapper {
                 .id(post.getId())
                 .title(post.getTitle())
                 .thumbnailUrl(post.getThumbnailUrl())
-                .userName(post.getUsers().stream().findFirst().map(User::getName).orElse("Unknown"))
+                .authorName(post.getAuthor().getName())
                 .updateDate(post.getUpdateDate())
                 .likeCount(post.getLikes().size())
                 .build();
@@ -25,7 +24,7 @@ public class PostMapper {
                 .id(post.getId())
                 .title(post.getTitle())
                 .thumbnailUrl(post.getThumbnailUrl())
-                .userName(post.getUsers().stream().findFirst().map(User::getName).orElse("Unknown"))
+                .authorName(post.getAuthor().getName())
                 .creationDate(post.getCreationDate())
                 .build();
     }
