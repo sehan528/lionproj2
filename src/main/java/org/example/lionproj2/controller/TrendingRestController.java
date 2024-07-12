@@ -21,6 +21,7 @@ public class TrendingRestController {
             @PathVariable String period,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        // 이것도 서비스에서 핸들러 타게 고쳐야됩니다!
         try {
             List<TrendingPostDTO> trendingPosts = trendingService.getTrendingPosts(period, page, size);
             return ResponseEntity.ok(trendingPosts);

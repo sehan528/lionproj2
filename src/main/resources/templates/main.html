@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Trending Posts</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <h1>Trending Posts</h1>
@@ -9,12 +10,66 @@
     <a th:href="@{/vlog.io(period='week')}" th:class="${period == 'week'} ? 'active'">This Week</a>
     <a th:href="@{/vlog.io(period='month')}" th:class="${period == 'month'} ? 'active'">This Month</a>
 </div>
-<div th:each="post : ${trendingPosts}">
-    <h2 th:text="${post.title}">Post Title</h2>
-    <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-    <p>By <span th:text="${post.authorName}">Author Name</span></p>
-    <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
-    <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
+<div id="posts-container">
+    <div th:each="post : ${trendingPosts}" class="post">
+        <h2 th:text="${post.title}">Post Title</h2>
+        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
+        <p>By <span th:text="${post.authorName}">Author Name</span></p>
+        <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
+        <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
+    </div>
 </div>
+<div id="loading" style="display: none;">Loading more posts...</div>
+
+<script th:inline="javascript">
+    var page = 1;
+    var loading = false;
+    var allLoaded = false;
+    var period = [[${period}]];
+
+    $(window).scroll(function() {
+        if(!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            loadMorePosts();
+        }
+    });
+
+    function loadMorePosts() {
+        if(loading || allLoaded) return;
+        loading = true;
+        $('#loading').show();
+
+        $.ajax({
+            url: '/api/v1/trending/' + period,
+            data: { page: page, size: 20 },
+            success: function(data) {
+                if(data.length > 0) {
+                    data.forEach(function(post) {
+                        var postHtml = '<div class="post">' +
+                            '<h2>' + post.title + '</h2>' +
+                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
+                            '<p>By ' + post.authorName + '</p>' +
+                            '<p>Updated: ' + new Date(post.updateDate).toLocaleString() + '</p>' +
+                            '<p>Likes: ' + post.likeCount + '</p>' +
+                            '</div>';
+                        $('#posts-container').append(postHtml);
+                    });
+                    page++;
+                } else {
+                    allLoaded = true;
+                    $('#loading').text('No more posts to load.');
+                }
+            },
+            error: function() {
+                $('#loading').text('Error loading posts. Please try again.');
+            },
+            complete: function() {
+                loading = false;
+                if(!allLoaded) {
+                    $('#loading').hide();
+                }
+            }
+        });
+    }
+</script>
 </body>
 </html>

@@ -24,6 +24,13 @@ public class MainController {
         return new RedirectView("/vlog.io");
     }
 
+    // [임시] 전역적으로 이 문제를 해결할 수 있는 로직을 찾고 적용하시오!
+    @GetMapping("/vlog.io/")
+    public RedirectView redirectToMainPage2() {
+        return new RedirectView("/vlog.io");
+    }
+
+
     @GetMapping("/vlog.io")
     public String mainPage(@RequestParam(defaultValue = "week") String period, Model model) {
         List<TrendingPostDTO> trendingPosts = trendingService.getTrendingPosts(period, 0, 20);

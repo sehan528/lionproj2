@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TrendingPostDTO {
+public class PostSummaryDTO {
     private Long id;
     private String title;
     private String thumbnailUrl;
-    private String authorName;
-    private LocalDateTime updateDate;
-    private int likeCount;
+    private LocalDateTime creationDate;
 }

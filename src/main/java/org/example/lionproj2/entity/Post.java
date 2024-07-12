@@ -2,12 +2,18 @@ package org.example.lionproj2.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "posts")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +45,7 @@ public class Post {
     private Set<Like> likes;
 
     @OneToMany(mappedBy = "post")
-    private Set<RecentView> recentViews;
+    private List<PostSeries> postSeries;
 
     @ManyToMany
     @JoinTable(

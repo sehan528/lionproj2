@@ -5,7 +5,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "user_posts")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

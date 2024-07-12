@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${userProfile.name} + '의 프로필'">User Profile</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="user-info">
+    <img th:if="${userProfile.profileImg}" th:src="${userProfile.profileImg}" alt="Profile Image">
+    <h1 th:text="${userProfile.name}">User Name</h1>
+    <p th:text="${userProfile.userId}">User ID</p>
+</div>
+
+<div class="tabs">
+    <a href="#" onclick="showPosts()" id="postsTab" th:class="${currentPage == 'posts' ? 'active' : ''}">Posts</a>
+    <a href="#" onclick="showSeries()" id="seriesTab" th:class="${currentPage == 'series' ? 'active' : ''}">Series</a>
+</div>
+
+<div id="postsContainer" th:class="${currentPage == 'posts' ? '' : 'hidden'}">
+    <div th:if="${#lists.isEmpty(userProfile.posts)}">
+        <p>No posts available.</p>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(userProfile.posts)}" class="posts-container">
+        <div th:each="post : ${userProfile.posts}" class="post">
+            <h2 th:text="${post.title}">Post Title</h2>
+            <img th:if="${post.thumbnailUrl}" th:src="${post.thumbnailUrl}" alt="Thumbnail">
+            <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+        </div>
+    </div>
+</div>
+
+<div id="seriesContainer" th:class="${currentPage == 'series' ? '' : 'hidden'}">
+    <div th:if="${#lists.isEmpty(userProfile.series)}">
+        <p>No series available.</p>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(userProfile.series)}" class="series-container">
+        <div th:each="series : ${userProfile.series}" class="series">
+            <h2 th:text="${series.name}">Series Name</h2>
+            <div th:each="post : ${series.posts}" class="post">
+                <h3 th:text="${post.title}">Post Title</h3>
+                <img th:if="${post.thumbnailUrl}" th:src="${post.thumbnailUrl}" alt="Thumbnail">
+                <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showPosts() {
+        document.getElementById('postsContainer').classList.remove('hidden');
+        document.getElementById('seriesContainer').classList.add('hidden');
+        document.getElementById('postsTab').classList.add('active');
+        document.getElementById('seriesTab').classList.remove('active');
+    }
+
+    function showSeries() {
+        document.getElementById('postsContainer').classList.add('hidden');
+        document.getElementById('seriesContainer').classList.remove('hidden');
+        document.getElementById('postsTab').classList.remove('active');
+        document.getElementById('seriesTab').classList.add('active');
+    }
+</script>
+</body>
+</html>

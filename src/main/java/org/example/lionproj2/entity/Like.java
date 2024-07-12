@@ -2,11 +2,16 @@ package org.example.lionproj2.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "likes")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

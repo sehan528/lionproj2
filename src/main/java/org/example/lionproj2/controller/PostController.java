@@ -18,6 +18,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPost(@PathVariable Long id) {
+        // 여기도 서비스에서 핸들러 타게 고쳐야됩니다!
         try {
             Post post = postService.getPostById(id);
             return ResponseEntity.ok(postMapper.postToTrendingPostDTO(post));
