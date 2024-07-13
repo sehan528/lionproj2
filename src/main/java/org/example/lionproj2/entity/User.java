@@ -46,7 +46,7 @@ public class User {
     private Set<Like> likes;
 
     @OneToMany(mappedBy = "user")
-    private Set<RecentView> recentViews;
+    private Set<Recent> recents;
 
     @ManyToMany
     @JoinTable(

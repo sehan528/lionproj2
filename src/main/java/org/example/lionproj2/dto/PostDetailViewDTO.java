@@ -10,15 +10,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostSummaryDTO {
+public class PostDetailViewDTO {
     private Long id;
     private String title;
-    private String authorName;
-    private String thumbnailUrl;
     private String context;
+    private String authorName;
     private LocalDateTime creationDate;
-
+    private LocalDateTime updateDate;
+    private String thumbnailUrl;
+    private Boolean isPrivate;
+    private Integer likeCount;
     private List<String> tags;
-    private boolean isPrivate;
-
+    private String seriesName;
+//    private Integer seriesOrder;
+    private Boolean isLiked;
 }

@@ -1,29 +1,55 @@
 package org.example.lionproj2.controller;
 
-import org.example.lionproj2.entity.Post;
-import org.example.lionproj2.exception.PostNotFoundException;
-import org.example.lionproj2.mapper.PostMapper;
-import org.example.lionproj2.service.PostService;
+import org.example.lionproj2.dto.PostDetailViewDTO;
+import org.example.lionproj2.dto.PostSummaryDTO;
+import org.example.lionproj2.service.PostDetailService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/api/v1/posts")
+import java.util.List;
+
+@Controller
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostService postService;
-    private final PostMapper postMapper;
+    private final PostDetailService postDetailService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getPost(@PathVariable Long id) {
-        // 여기도 서비스에서 핸들러 타게 고쳐야됩니다!
-        try {
-            Post post = postService.getPostById(id);
-            return ResponseEntity.ok(postMapper.postToTrendingPostDTO(post));
-        } catch (PostNotFoundException e) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/vlog.io/@{username}/{postname}")
+    public String getPostDetails(@PathVariable String username,
+                                    @PathVariable String postname,
+                                    @RequestParam(required = false) Long userId,
+                                    Model model) {
+        PostDetailViewDTO postDetail = postDetailService.getPostDetailByUsernameAndPostname(username, postname, userId);
+
+        model.addAttribute("post", postDetail);
+        model.addAttribute("userId", userId);
+
+        if (postDetail.getSeriesName() != null) {
+            List<PostSummaryDTO> seriesPosts = postDetailService.getSeriesPostsBySeriesName(postDetail.getSeriesName());
+            model.addAttribute("seriesPosts", seriesPosts);
         }
+
+
+
+        return "postDetail";
     }
+
+    @GetMapping("/edit/{id}")
+    public String editPostForm(@PathVariable Long id,
+                                @RequestParam Long userId,
+                                Model model) {
+        PostDetailViewDTO postDetail = postDetailService.getPostDetail(id, userId);
+        model.addAttribute("post", postDetail);
+        return "edit-post";
+    }
+
+//    @PostMapping("/edit/{id}")
+//    public String editPost(@PathVariable Long id,
+//                           @ModelAttribute PostDetailViewDTO updatedPost,
+//                           @RequestParam Long userId) {
+//        postDetailService.updatePost(id, updatedPost, userId);
+//        return "redirect:/vlog.io/@" + updatedPost.getAuthorName() + "/" + updatedPost.getTitle();
+//    }
 }

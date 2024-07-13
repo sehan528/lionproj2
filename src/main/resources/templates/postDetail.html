@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${post.title}"></title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1 th:text="${post.title}"></h1>
+<p th:text="${post.authorName}"></p>
+<p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}"></p>
+<div th:utext="${post.context}"></div>
+
+<div>
+    <span th:each="tag : ${post.tags}" th:text="${tag}" class="tag"></span>
+</div>
+
+<div th:if="${post.seriesName}">
+    <h3>Series: <span th:text="${post.seriesName}"></span></h3>
+    <ul>
+        <li th:each="seriesPost : ${seriesPosts}">
+            <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${seriesPost.title}}"
+                th:text="${seriesPost.title}"></a>
+        </li>
+    </ul>
+</div>
+
+<button id="likeButton" th:onclick="'toggleLike(' + ${post.id} + ')'">
+    Like <span id="likeCount" th:text="${post.likeCount}"></span>
+</button>
+
+<script th:inline="javascript">
+    var isLiked = [[${post.isLiked}]];
+    var postId = [[${post.id}]];
+    var userId = [[${userId}]];
+
+    $(document).ready(function() {
+        updateLikeButton();
+    });
+
+    function toggleLike(postId) {
+        $.ajax({
+            url: '/api/v1/posts/' + postId + '/like',
+            type: 'POST',
+            data: { userId: userId },
+            success: function(response) {
+                isLiked = response;
+                var likeCount = parseInt($('#likeCount').text());
+                $('#likeCount').text(isLiked ? likeCount + 1 : likeCount - 1);
+                updateLikeButton();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error toggling like:', error);
+            }
+        });
+    }
+
+    function updateLikeButton() {
+        var $likeButton = $('#likeButton');
+        if (isLiked) {
+            $likeButton.addClass('liked');
+            $likeButton.text('Unlike ' + $('#likeCount').text());
+        } else {
+            $likeButton.removeClass('liked');
+            $likeButton.text('Like ' + $('#likeCount').text());
+        }
+    }
+</script>
+</body>
+</html>

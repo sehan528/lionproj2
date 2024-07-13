@@ -17,6 +17,7 @@
         <p>By <span th:text="${post.authorName}">Author Name</span></p>
         <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
         <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
+        <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${post.title}}">Read More</a>
     </div>
 </div>
 <div id="loading" style="display: none;">Loading more posts...</div>
@@ -48,6 +49,7 @@
                             '<h2>' + post.title + '</h2>' +
                             '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
                             '<p>By ' + post.authorName + '</p>' +
+                            '<a th:href="@{\'/vlog.io/@\' + ${post.authorName} + \'/\' + ${post.title}}">Read More</a>'+
                             '<p>Updated: ' + new Date(post.updateDate).toLocaleString() + '</p>' +
                             '<p>Likes: ' + post.likeCount + '</p>' +
                             '</div>';

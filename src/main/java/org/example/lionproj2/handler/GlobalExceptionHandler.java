@@ -2,6 +2,7 @@ package org.example.lionproj2.handler;
 
 import org.example.lionproj2.exception.InvalidPeriodException;
 import org.example.lionproj2.exception.PostNotFoundException;
+import org.example.lionproj2.exception.UnauthorizedException;
 import org.example.lionproj2.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,10 @@ public class GlobalExceptionHandler {
         modelAndView.addObject("errorMessage", e.getMessage());
         modelAndView.setStatus(HttpStatus.NOT_FOUND);
         return modelAndView;
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 }

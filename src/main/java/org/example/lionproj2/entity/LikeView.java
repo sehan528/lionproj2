@@ -7,13 +7,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "recent_views")
+@Table(name = "like_view")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RecentView {
+public class LikeView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +24,6 @@ public class RecentView {
     @Column(name = "post_id")
     private Long postId;
 
-    @Column(name = "view_date")
-    private LocalDateTime viewDate;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

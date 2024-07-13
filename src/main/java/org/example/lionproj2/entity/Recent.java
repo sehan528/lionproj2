@@ -1,6 +1,5 @@
 package org.example.lionproj2.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,16 +12,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RecentView {
+public class Recent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "post_id")
-    private Long postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @Column(name = "view_date")
     private LocalDateTime viewDate;
