@@ -13,6 +13,7 @@ public class PostMapper {
                 .id(post.getId())
                 .title(post.getTitle())
                 .thumbnailUrl(post.getThumbnailUrl())
+
                 .authorName(post.getAuthor().getName())
                 .updateDate(post.getUpdateDate())
                 .likeCount(post.getLikes().size())

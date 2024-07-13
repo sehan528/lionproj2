@@ -6,6 +6,10 @@
         .hidden {
             display: none;
         }
+
+        .active {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -16,8 +20,11 @@
 </div>
 
 <div class="tabs">
-    <a href="#" onclick="showPosts()" id="postsTab" th:class="${currentPage == 'posts' ? 'active' : ''}">Posts</a>
-    <a href="#" onclick="showSeries()" id="seriesTab" th:class="${currentPage == 'series' ? 'active' : ''}">Series</a>
+    <a href="#" onclick="showContent('posts')" id="postsTab"
+       th:class="${currentPage == 'posts' ? 'active' : ''}">Posts</a>
+    <a href="#" onclick="showContent('series')" id="seriesTab" th:class="${currentPage == 'series' ? 'active' : ''}">Series</a>
+    <a href="#" onclick="showContent('about')" id="aboutTab"
+       th:class="${currentPage == 'about' ? 'active' : ''}">About</a>
 </div>
 
 <div id="postsContainer" th:class="${currentPage == 'posts' ? '' : 'hidden'}">
@@ -25,11 +32,28 @@
         <p>No posts available.</p>
     </div>
 
+    <!-- 태그 정보 표시 -->
+    <div class="tags-container">
+        <h3>태그</h3>
+        <a href="#" onclick="showAllPosts()">전체보기 (<span th:text="${#lists.size(userProfile.posts)}"></span>)</a>
+        <th:block th:each="tag : ${userProfile.tags}">
+            <a href="#" th:data-tag="${tag.name}" onclick="showPostsByTag(this.getAttribute('data-tag'))">
+                <span th:text="${tag.name}"></span> (<span th:text="${tag.count}"></span>)
+            </a>
+        </th:block>
+    </div>
+
+    <!-- 게시글 목록 -->
     <div th:if="${not #lists.isEmpty(userProfile.posts)}" class="posts-container">
         <div th:each="post : ${userProfile.posts}" class="post">
-            <h2 th:text="${post.title}">Post Title</h2>
             <img th:if="${post.thumbnailUrl}" th:src="${post.thumbnailUrl}" alt="Thumbnail">
+            <h2 th:text="${post.title}">Post Title</h2>
+            <p th:text="${post.context}">Post Context</p>
+            <div class="post-tags">
+                <span th:each="tag : ${post.tags}" class="tag" th:text="${tag}"></span>
+            </div>
             <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+            <p th:text="${post.isPrivate ? '비공개' : '공개'}">Visibility</p>
         </div>
     </div>
 </div>
@@ -42,28 +66,46 @@
     <div th:if="${not #lists.isEmpty(userProfile.series)}" class="series-container">
         <div th:each="series : ${userProfile.series}" class="series">
             <h2 th:text="${series.name}">Series Name</h2>
-            <div th:each="post : ${series.posts}" class="post">
-                <h3 th:text="${post.title}">Post Title</h3>
-                <img th:if="${post.thumbnailUrl}" th:src="${post.thumbnailUrl}" alt="Thumbnail">
-                <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
-            </div>
+            <p th:text="${#lists.size(series.posts)} + '개의 포스트'">Post Count</p>
+            <p th:if="${not #lists.isEmpty(series.posts)}"
+               th:text="'마지막 업데이트: ' + ${#temporals.format(series.posts[0].creationDate, 'yyyy-MM-dd HH:mm')}">
+                Last Update Date
+            </p>
         </div>
     </div>
 </div>
 
+<div id="aboutContainer" th:class="${currentPage == 'about' ? '' : 'hidden'}">
+    <h2>About Me</h2>
+    <p th:text="${userProfile.aboutMe}">About Me content</p>
+</div>
+
 <script>
-    function showPosts() {
-        document.getElementById('postsContainer').classList.remove('hidden');
-        document.getElementById('seriesContainer').classList.add('hidden');
-        document.getElementById('postsTab').classList.add('active');
-        document.getElementById('seriesTab').classList.remove('active');
+    function showContent(contentType) {
+        const containers = ['postsContainer', 'seriesContainer', 'aboutContainer'];
+        const tabs = ['postsTab', 'seriesTab', 'aboutTab'];
+
+        containers.forEach(container => {
+            document.getElementById(container).classList.add('hidden');
+        });
+
+        tabs.forEach(tab => {
+            document.getElementById(tab).classList.remove('active');
+        });
+
+        document.getElementById(contentType + 'Container').classList.remove('hidden');
+        document.getElementById(contentType + 'Tab').classList.add('active');
     }
 
-    function showSeries() {
-        document.getElementById('postsContainer').classList.add('hidden');
-        document.getElementById('seriesContainer').classList.remove('hidden');
-        document.getElementById('postsTab').classList.remove('active');
-        document.getElementById('seriesTab').classList.add('active');
+    function showAllPosts() {
+        document.querySelectorAll('.post').forEach(post => post.style.display = 'block');
+    }
+
+    function showPostsByTag(tagName) {
+        document.querySelectorAll('.post').forEach(post => {
+            const hasTag = Array.from(post.querySelectorAll('.tag')).some(tag => tag.textContent.trim() === tagName);
+            post.style.display = hasTag ? 'block' : 'none';
+        });
     }
 </script>
 </body>

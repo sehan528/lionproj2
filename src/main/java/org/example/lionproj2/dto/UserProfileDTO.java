@@ -15,6 +15,8 @@ public class UserProfileDTO {
     private String profileImg;
     private List<PostSummaryDTO> posts;
     private List<SeriesDTO> series;
+    private String aboutMe;
+    private List<TagDTO> tags;
 }
 
 

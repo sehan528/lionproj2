@@ -39,4 +39,15 @@ public class UserProfileController {
         model.addAttribute("currentPage", "series");
         return "userProfile";
     }
+
+    @GetMapping("/@{username}/about")
+    public String getUserAbout(@PathVariable String username, Model model) {
+        UserProfileDTO userProfile = userProfileService.getUserProfile(username);
+        String aboutMe = userProfileService.getUserAboutMe(username);
+        model.addAttribute("userProfile", userProfile);
+        model.addAttribute("aboutMe", aboutMe);
+        model.addAttribute("currentPage", "about");
+        return "userProfile";
+    }
+
 }
