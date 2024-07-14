@@ -21,13 +21,13 @@
 
 <div class="tabs">
     <a href="#" onclick="showContent('posts')" id="postsTab"
-       th:class="${currentPage == 'posts' ? 'active' : ''}">Posts</a>
-    <a href="#" onclick="showContent('series')" id="seriesTab" th:class="${currentPage == 'series' ? 'active' : ''}">Series</a>
+       th:classappend="${currentPage == 'posts' ? 'active' : ''}">Posts</a>
+    <a href="#" onclick="showContent('series')" id="seriesTab" th:classappend="${currentPage == 'series' ? 'active' : ''}">Series</a>
     <a href="#" onclick="showContent('about')" id="aboutTab"
-       th:class="${currentPage == 'about' ? 'active' : ''}">About</a>
+       th:classappend="${currentPage == 'about' ? 'active' : ''}">About</a>
 </div>
 
-<div id="postsContainer" th:class="${currentPage == 'posts' ? '' : 'hidden'}">
+<div id="postsContainer" th:classappend="${currentPage == 'posts' ? '' : 'hidden'}">
     <div th:if="${#lists.isEmpty(userProfile.posts)}">
         <p>No posts available.</p>
     </div>
@@ -53,12 +53,18 @@
                 <span th:each="tag : ${post.tags}" class="tag" th:text="${tag}"></span>
             </div>
             <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+            <p th:text="${userProfile.name}"></p>
+            <button class="read-more-btn"
+                    th:data-author-name="${userProfile.name}"
+                    th:data-post-title="${post.title}">
+                Read More
+            </button>
             <p th:text="${post.isPrivate ? '비공개' : '공개'}">Visibility</p>
         </div>
     </div>
 </div>
 
-<div id="seriesContainer" th:class="${currentPage == 'series' ? '' : 'hidden'}">
+<div id="seriesContainer" th:classappend="${currentPage == 'series' ? '' : 'hidden'}">
     <div th:if="${#lists.isEmpty(userProfile.series)}">
         <p>No series available.</p>
     </div>
@@ -75,12 +81,23 @@
     </div>
 </div>
 
-<div id="aboutContainer" th:class="${currentPage == 'about' ? '' : 'hidden'}">
+<div id="aboutContainer" th:classappend="${currentPage == 'about' ? '' : 'hidden'}">
     <h2>About Me</h2>
     <p th:text="${userProfile.aboutMe}">About Me content</p>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    $(document).ready(function() {
+        // 이벤트 위임을 사용하여 동적으로 생성된 버튼에도 이벤트 리스너를 적용
+        $(document).on('click', '.read-more-btn', function() {
+            var authorName = $(this).data('authorName');
+            var postTitle = $(this).data('postTitle');
+            console.log(authorName, postTitle);
+            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
+        });
+    });
+
     function showContent(contentType) {
         const containers = ['postsContainer', 'seriesContainer', 'aboutContainer'];
         const tabs = ['postsTab', 'seriesTab', 'aboutTab'];

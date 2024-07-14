@@ -7,8 +7,8 @@
 <body>
 <h1>Trending Posts</h1>
 <div>
-    <a th:href="@{/vlog.io(period='week')}" th:class="${period == 'week'} ? 'active'">This Week</a>
-    <a th:href="@{/vlog.io(period='month')}" th:class="${period == 'month'} ? 'active'">This Month</a>
+    <a href="#" class="period-link" data-period="week" th:classappend="${period == 'week'} ? 'active' : ''">This Week</a>
+    <a href="#" class="period-link" data-period="month" th:classappend="${period == 'month'} ? 'active' : ''">This Month</a>
 </div>
 <div id="posts-container">
     <div th:each="post : ${trendingPosts}" class="post">
@@ -17,7 +17,11 @@
         <p>By <span th:text="${post.authorName}">Author Name</span></p>
         <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
         <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
-        <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${post.title}}">Read More</a>
+        <button class="read-more-btn"
+                th:data-author-name="${post.authorName}"
+                th:data-post-title="${post.title}">
+            Read More
+        </button>
     </div>
 </div>
 <div id="loading" style="display: none;">Loading more posts...</div>
@@ -26,16 +30,35 @@
     var page = 1;
     var loading = false;
     var allLoaded = false;
-    var period = [[${period}]];
+    var period = /*[[${period}]]*/ 'week';
+
+    $(document).ready(function() {
+        $('.period-link').click(function(event) {
+            event.preventDefault();
+            period = $(this).data('period');
+            page = 1; // Reset page number
+            allLoaded = false; // Reset allLoaded
+            $('#posts-container').empty(); // Clear current posts
+            loadMorePosts(); // Load new posts for selected period
+            $('.period-link').removeClass('active'); // Remove active class from all links
+            $(this).addClass('active'); // Add active class to the clicked link
+        });
+
+        $(document).on('click', '.read-more-btn', function() {
+            var authorName = $(this).data('author-name');
+            var postTitle = $(this).data('post-title');
+            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
+        });
+    });
 
     $(window).scroll(function() {
-        if(!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+        if (!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
             loadMorePosts();
         }
     });
 
     function loadMorePosts() {
-        if(loading || allLoaded) return;
+        if (loading || allLoaded) return;
         loading = true;
         $('#loading').show();
 
@@ -43,15 +66,15 @@
             url: '/api/v1/trending/' + period,
             data: { page: page, size: 20 },
             success: function(data) {
-                if(data.length > 0) {
+                if (data.length > 0) {
                     data.forEach(function(post) {
                         var postHtml = '<div class="post">' +
                             '<h2>' + post.title + '</h2>' +
                             '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
                             '<p>By ' + post.authorName + '</p>' +
-                            '<a th:href="@{\'/vlog.io/@\' + ${post.authorName} + \'/\' + ${post.title}}">Read More</a>'+
                             '<p>Updated: ' + new Date(post.updateDate).toLocaleString() + '</p>' +
                             '<p>Likes: ' + post.likeCount + '</p>' +
+                            '<button class="read-more-btn" data-author-name="' + post.authorName + '" data-post-title="' + post.title + '">Read More</button>' +
                             '</div>';
                         $('#posts-container').append(postHtml);
                     });
@@ -66,7 +89,7 @@
             },
             complete: function() {
                 loading = false;
-                if(!allLoaded) {
+                if (!allLoaded) {
                     $('#loading').hide();
                 }
             }
