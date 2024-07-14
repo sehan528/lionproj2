@@ -1,11 +1,9 @@
 package org.example.lionproj2.handler;
 
-import org.example.lionproj2.exception.InvalidPeriodException;
-import org.example.lionproj2.exception.PostNotFoundException;
-import org.example.lionproj2.exception.UnauthorizedException;
-import org.example.lionproj2.exception.UserNotFoundException;
+import org.example.lionproj2.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,5 +32,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateUserException.class)
+    public String handleDuplicateUserException(DuplicateUserException e, Model model) {
+        model.addAttribute("errorMessage", e.getMessage());
+        return "signup";
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public String handleInvalidCredentialsException(InvalidCredentialsException e, Model model) {
+        model.addAttribute("errorMessage", e.getMessage());
+        return "login";
     }
 }

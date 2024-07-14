@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sign Up</title>
+</head>
+<body>
+<h2>Sign Up</h2>
+<form th:action="@{/signup}" th:object="${signupDto}" method="post">
+    <div th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></div>
+    <div th:if="${#fields.hasErrors('*')}" style="color: red;">
+        입력 조건에 부합하지 않는 값을 입력했습니다. 확인 후 다시 시도해주세요.
+    </div>
+    <div>
+        <label>User ID:</label>
+        <input type="text" th:field="*{userId}" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" th:field="*{password}" />
+    </div>
+    <div>
+        <label>Name:</label>
+        <input type="text" th:field="*{name}" />
+    </div>
+    <div>
+        <label>Email:</label>
+        <input type="email" th:field="*{email}" />
+    </div>
+    <div>
+        <button type="submit">Sign Up</button>
+        <a th:href="@{/}" class="button">Cancel</a>
+    </div>
+</form>
+</body>
+</html>
