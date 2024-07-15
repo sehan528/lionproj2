@@ -1,11 +1,9 @@
 package org.example.lionproj2.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Immutable;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +11,10 @@ import java.time.LocalDateTime;
 @Table(name = "recent_posts_view")
 @Getter
 @Setter
+@Immutable
 public class RecentPostView {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_id")
@@ -24,8 +24,12 @@ public class RecentPostView {
     private Long postId;
 
     private String title;
+
     private String thumbnailUrl;
+
     private String authorName;
+
     private LocalDateTime creationDate;
+
     private LocalDateTime viewDate;
 }

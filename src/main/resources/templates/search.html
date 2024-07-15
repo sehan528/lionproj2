@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Search Results</h1>
+<form th:action="@{/vlog.io/search}" method="get">
+    <input type="text" name="q" th:value="${searchQuery}" placeholder="검색어를 입력하세요">
+    <button type="submit">Search</button>
+</form>
+
+<p>Total results: <span th:text="${totalResults}"></span></p>
+
+<div id="posts-container">
+    <div th:each="post : ${searchResults}" class="post">
+        <h2 th:text="${post.title}">Post Title</h2>
+        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
+        <p>By <span th:text="${post.authorName}">Author Name</span></p>
+        <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
+        <div>
+            <span th:each="tag : ${post.tags}" th:text="${tag}" class="tag"></span>
+        </div>
+        <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${post.title}}">Read More</a>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">Loading more posts...</div>
+
+<script th:inline="javascript">
+    var page = 1;
+    var loading = false;
+    var allLoaded = false;
+    var query = [[${searchQuery}]];
+
+    $(window).scroll(function() {
+        if (!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            loadMorePosts();
+        }
+    });
+
+    function loadMorePosts() {
+        if (loading || allLoaded) return;
+        loading = true;
+        $('#loading').show();
+
+        $.ajax({
+            url: '/api/v1/search',
+            data: { q: query, page: page, size: 20 },
+            success: function(data) {
+                if (data.posts.length > 0) {
+                    data.posts.forEach(function(post) {
+                        var postHtml = '<div class="post">' +
+                            '<h2>' + post.title + '</h2>' +
+                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
+                            '<p>By ' + post.authorName + '</p>' +
+                            '<p>Created: ' + new Date(post.creationDate).toLocaleString() + '</p>' +
+                            '<div>' + post.tags.map(tag => '<span class="tag">' + tag + '</span>').join('') + '</div>' +
+                            '<a href="/vlog.io/@' + post.authorName + '/' + post.title + '">Read More</a>' +
+                            '</div>';
+                        $('#posts-container').append(postHtml);
+                    });
+                    page++;
+                } else {
+                    allLoaded = true;
+                    $('#loading').text('No more posts to load.');
+                }
+            },
+            error: function() {
+                $('#loading').text('Error loading posts. Please try again.');
+            },
+            complete: function() {
+                loading = false;
+                if (!allLoaded) {
+                    $('#loading').hide();
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
