@@ -28,6 +28,7 @@ import java.util.List;
 //        return ResponseEntity.ok(recentPosts);
 //    }
 //}
+
 public class RecentPostRestController {
     private final RecentPostService recentPostService;
     private final RecentService recentService;

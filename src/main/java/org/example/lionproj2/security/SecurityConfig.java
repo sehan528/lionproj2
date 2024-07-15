@@ -37,6 +37,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/signup", "/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/vlog.io/setting/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/setting", "/write").authenticated()
                         .requestMatchers(HttpMethod.POST, "/editAboutme", "/uploadProfile", "/editPost").authenticated()
                         .anyRequest().permitAll()
