@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikedPostViewRepository extends JpaRepository<LikedPostView, Long> {
     Page<LikedPostView> findByAuthorNameOrderByLikedAtDesc(String authorName, Pageable pageable);
+    Page<LikedPostView> findByUserIdOrderByLikedAtDesc(Long userId, Pageable pageable);
+
 }
+

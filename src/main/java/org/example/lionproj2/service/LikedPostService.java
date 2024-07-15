@@ -1,6 +1,7 @@
 package org.example.lionproj2.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.LikedPostDTO;
 import org.example.lionproj2.entity.LikedPostView;
 import org.example.lionproj2.entity.User;
@@ -16,31 +17,32 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LikedPostService {
     private final LikedPostViewRepository likedPostViewRepository;
-    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public List<LikedPostDTO> getLikedPosts(Long userId, int page, int size) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<LikedPostView> likedPostsPage = likedPostViewRepository.findByAuthorNameOrderByLikedAtDesc(user.getName(), pageRequest);
+        Page<LikedPostView> likedPostsPage = likedPostViewRepository.findByUserIdOrderByLikedAtDesc(userId, pageRequest);
 
-        return likedPostsPage.getContent().stream()
+        List<LikedPostDTO> likedPosts = likedPostsPage.getContent().stream()
                 .map(this::mapToLikedPostDTO)
                 .collect(Collectors.toList());
+
+        log.info("Retrieved {} liked posts for user ID: {}", likedPosts.size(), userId);
+
+        return likedPosts;
     }
 
-    private LikedPostDTO mapToLikedPostDTO(LikedPostView likedPostView) {
+    private LikedPostDTO mapToLikedPostDTO(LikedPostView view) {
         return LikedPostDTO.builder()
-                .id(likedPostView.getId())
-                .title(likedPostView.getTitle())
-                .thumbnailUrl(likedPostView.getThumbnailUrl())
-                .authorName(likedPostView.getAuthorName())
-                .creationDate(likedPostView.getCreationDate())
-                .likedAt(likedPostView.getLikedAt())
+                .id(view.getPostId())
+                .title(view.getTitle())
+                .thumbnailUrl(view.getThumbnailUrl())
+                .authorName(view.getAuthorName())
+                .creationDate(view.getCreationDate())
+                .likedAt(view.getLikedAt())
                 .build();
     }
 }

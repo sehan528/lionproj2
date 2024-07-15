@@ -37,7 +37,9 @@ public class ListController {
         log.info("User ID from authentication: {}", userIdLong);
 
         List<LikedPostDTO> likedPosts = likedPostService.getLikedPosts(userIdLong, 0, 20);
+        log.info("{} 개의 게시글 조회됨...", likedPosts.size());
         model.addAttribute("likedPosts", likedPosts);
+
         return "liked-posts";
     }
 }

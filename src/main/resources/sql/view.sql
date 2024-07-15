@@ -53,6 +53,23 @@ FROM likes l
          JOIN users u ON p.author_id = u.id
 ORDER BY l.created_at DESC;
 
+CREATE OR REPLACE VIEW liked_posts_view AS
+SELECT
+    l.id AS id,  -- 좋아요 테이블의 id를 뷰의 고유 식별자로 사용
+    l.user_id,
+    p.id AS post_id,
+    p.title,
+    p.thumbnail_url,
+    u.name AS author_name,
+    p.creation_date,
+    l.created_at AS liked_at
+FROM
+    likes l
+        JOIN posts p ON l.post_id = p.id
+        JOIN users u ON p.author_id = u.id
+ORDER BY
+    l.created_at DESC;
+
 -- 최근 읽은 글 뷰 (C-2)
 CREATE VIEW recent_read_posts_view AS
 SELECT p.id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date, rv.view_date
