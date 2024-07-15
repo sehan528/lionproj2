@@ -9,12 +9,19 @@ GROUP BY p.id
 ORDER BY like_count DESC, p.update_date DESC;
 
 -- 최근 포스트 뷰 (a-2)
-CREATE VIEW recent_posts_view AS
-SELECT p.id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date
-FROM posts p
+-- CREATE VIEW recent_posts_view AS
+-- SELECT p.id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date
+-- FROM posts p
+--          JOIN users u ON p.author_id = u.id
+-- WHERE p.is_private = FALSE
+-- ORDER BY p.creation_date DESC;
+
+CREATE OR REPLACE VIEW recent_posts_view AS
+SELECT rv.id, rv.user_id, rv.post_id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date, rv.view_date
+FROM recent_views rv
+         JOIN posts p ON rv.post_id = p.id
          JOIN users u ON p.author_id = u.id
-WHERE p.is_private = FALSE
-ORDER BY p.creation_date DESC;
+ORDER BY rv.view_date DESC;
 
 -- 사용자 프로필 뷰 (b-1, b-2, b-3)
 CREATE VIEW user_profile_view AS
@@ -46,12 +53,12 @@ FROM posts p
 GROUP BY p.id;
 
 -- 좋아요 목록 뷰 (C-1)
-CREATE VIEW liked_posts_view AS
-SELECT p.id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date, l.created_at AS liked_at
-FROM likes l
-         JOIN posts p ON l.post_id = p.id
-         JOIN users u ON p.author_id = u.id
-ORDER BY l.created_at DESC;
+-- CREATE VIEW liked_posts_view AS
+-- SELECT p.id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date, l.created_at AS liked_at
+-- FROM likes l
+--          JOIN posts p ON l.post_id = p.id
+--          JOIN users u ON p.author_id = u.id
+-- ORDER BY l.created_at DESC;
 
 CREATE OR REPLACE VIEW liked_posts_view AS
 SELECT

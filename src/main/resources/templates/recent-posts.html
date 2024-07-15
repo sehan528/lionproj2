@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recent Posts</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Recent Posts</h1>
+<div id="posts-container">
+    <div th:each="post : ${recentPosts}" class="post">
+        <h2 th:text="${post.title}">Post Title</h2>
+        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
+        <p>By <span th:text="${post.authorName}">Author Name</span></p>
+        <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
+        <p>Viewed: <span th:text="${#temporals.format(post.viewDate, 'yyyy-MM-dd HH:mm')}">View Date</span></p>
+        <button class="read-more-btn"
+                th:data-author-name="${post.authorName}"
+                th:data-post-title="${post.title}">
+            Read More
+        </button>
+    </div>
+</div>
+<div id="loading" style="display: none;">Loading more posts...</div>
+
+<script th:inline="javascript">
+    var page = 1;
+    var loading = false;
+    var allLoaded = false;
+    var userId = /*[[${session.userId}]]*/ null;
+
+    $(document).ready(function() {
+        $(document).on('click', '.read-more-btn', function() {
+            var authorName = $(this).data('author-name');
+            var postTitle = $(this).data('post-title');
+            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
+        });
+    });
+
+    $(window).scroll(function() {
+        if (!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            loadMorePosts();
+        }
+    });
+
+    function loadMorePosts() {
+        if (loading || allLoaded) return;
+        loading = true;
+        $('#loading').show();
+
+        $.ajax({
+            url: '/api/v1/recent',
+            data: { userId: userId, page: page, size: 20 },
+            success: function(data) {
+                if (data.length > 0) {
+                    data.forEach(function(post) {
+                        var postHtml = '<div class="post">' +
+                            '<h2>' + post.title + '</h2>' +
+                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
+                            '<p>By ' + post.authorName + '</p>' +
+                            '<p>Created: ' + new Date(post.creationDate).toLocaleString() + '</p>' +
+                            '<p>Viewed: ' + new Date(post.viewDate).toLocaleString() + '</p>' +
+                            '<button class="read-more-btn" data-author-name="' + post.authorName + '" data-post-title="' + post.title + '">Read More</button>' +
+                            '</div>';
+                        $('#posts-container').append(postHtml);
+                    });
+                    page++;
+                } else {
+                    allLoaded = true;
+                    $('#loading').text('No more posts to load.');
+                }
+            },
+            error: function() {
+                $('#loading').text('Error loading posts. Please try again.');
+            },
+            complete: function() {
+                loading = false;
+                if (!allLoaded) {
+                    $('#loading').hide();
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

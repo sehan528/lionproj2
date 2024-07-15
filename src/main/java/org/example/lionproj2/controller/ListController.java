@@ -1,6 +1,5 @@
 package org.example.lionproj2.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.LikedPostDTO;
