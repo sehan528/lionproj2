@@ -2,6 +2,7 @@ package org.example.lionproj2.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.LoginDTO;
 import org.example.lionproj2.dto.SignupDTO;
 import org.example.lionproj2.entity.User;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
@@ -54,11 +56,21 @@ public class AuthController {
         }
         try {
             User user = authService.login(loginDto);
+
             session.setAttribute("userId", user.getId());
+            log.info("해당 유저 로그인 성공함. UserID: {}", user.getId());
+
             return "redirect:/";
         } catch (InvalidCredentialsException e) {
             result.rejectValue("userId", "error.loginDto", e.getMessage());
             return "login";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.removeAttribute("userId");
+        log.info("유저 logout.");
+        return "redirect:/";
     }
 }
