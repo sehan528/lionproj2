@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.RecentPostDTO;
 import org.example.lionproj2.entity.RecentPostView;
+import org.example.lionproj2.entity.RecentView;
 import org.example.lionproj2.repository.RecentPostViewRepository;
+import org.example.lionproj2.repository.RecentViewRepository;
 import org.example.lionproj2.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class RecentPostService {
     private final RecentPostViewRepository recentPostViewRepository;
     private final UserRepository userRepository;
+    private final RecentViewRepository recentViewRepository;
 
     @Transactional(readOnly = true)
     public List<RecentPostDTO> getRecentPosts(Long userId, int page, int size) {
@@ -48,16 +51,31 @@ public class RecentPostService {
                 .build();
     }
 
+//    @Transactional
+//    public void addRecentView(Long userId, Long postId) {
+//        // 이미 존재하는 최근 조회 기록이 있다면 삭제
+//        recentPostViewRepository.deleteByUserIdAndPostId(userId, postId);
+//
+//        RecentPostView recentPostView = new RecentPostView();
+//        recentPostView.setUserId(userId);
+//        recentPostView.setPostId(postId);
+//        recentPostView.setViewDate(LocalDateTime.now());
+//
+//        recentPostViewRepository.save(recentPostView);
+//    }
+
     @Transactional
     public void addRecentView(Long userId, Long postId) {
-        // 이미 존재하는 최근 조회 기록이 있다면 삭제
-        recentPostViewRepository.deleteByUserIdAndPostId(userId, postId);
+        RecentView recentView = new RecentView();
+        recentView.setUserId(userId);
+        recentView.setPostId(postId);
+        recentView.setViewDate(LocalDateTime.now());
+        recentViewRepository.save(recentView);
 
-        RecentPostView recentPostView = new RecentPostView();
-        recentPostView.setUserId(userId);
-        recentPostView.setPostId(postId);
-        recentPostView.setViewDate(LocalDateTime.now());
-
-        recentPostViewRepository.save(recentPostView);
+        // 최대 20개의 최근 조회 기록 유지
+        List<RecentView> userViews = recentViewRepository.findByUserIdOrderByViewDateDesc(userId);
+        if (userViews.size() > 20) {
+            recentViewRepository.delete(userViews.get(userViews.size() - 1));
+        }
     }
 }
