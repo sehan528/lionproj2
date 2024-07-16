@@ -20,6 +20,7 @@ public class SearchRestController {
             @RequestParam String q,
             @RequestParam int page,
             @RequestParam(defaultValue = "20") int size) {
+
         SearchResultDTO result = searchService.search(q.toLowerCase(), page, size);
         return ResponseEntity.ok(result);
     }

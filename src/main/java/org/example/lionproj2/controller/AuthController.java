@@ -27,6 +27,7 @@ public class AuthController {
     @GetMapping("/signup")
     public String signupForm(Model model) {
         model.addAttribute("signupDto", new SignupDTO());
+
         return "signup";
     }
 
@@ -35,6 +36,7 @@ public class AuthController {
         if (result.hasErrors()) {
             return "signup";
         }
+
         try {
             authService.signup(signupDto);
             return "redirect:/login";
@@ -71,6 +73,7 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.removeAttribute("userId");
         log.info("유저 logout.");
+
         return "redirect:/";
     }
 }

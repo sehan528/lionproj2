@@ -39,6 +39,7 @@ public class MainController {
     @GetMapping("/vlog.io")
     public String mainPage(@RequestParam(defaultValue = "week") String period, Model model, HttpSession session) {
         List<TrendingPostDTO> trendingPosts = trendingService.getTrendingPosts(period, 0, 20);
+
         model.addAttribute("trendingPosts", trendingPosts);
         model.addAttribute("period", period);
 

@@ -46,6 +46,7 @@ public class RecentPostRestController {
         } else {
             recentPosts = recentService.getRecentPosts(page, size);
         }
+
         return ResponseEntity.ok(recentPosts);
     }
 }

@@ -22,7 +22,9 @@ public class ListRestController {
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+
         List<LikedPostDTO> likedPosts = likedPostService.getLikedPosts(userId, page, size);
+
         return ResponseEntity.ok(likedPosts);
     }
 }

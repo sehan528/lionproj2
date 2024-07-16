@@ -38,6 +38,7 @@ public class PostController {
 
         if (postDetail.getSeriesName() != null) {
             List<PostSummaryDTO> seriesPosts = postDetailService.getSeriesPostsBySeriesName(postDetail.getSeriesName());
+
             model.addAttribute("seriesPosts", seriesPosts);
         }
 

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,11 +35,17 @@ public class PostService {
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // 썸네일 URL이 없으면 기본 이미지 설정
+        String thumbnailUrl = postForm.getThumbnailUrl();
+        if (thumbnailUrl == null || thumbnailUrl.isEmpty()) {
+            thumbnailUrl = "https://images.velog.io/images/kim-mg/post/b6928585-e245-4e5f-b878-0bbf278e5886/velog_logo.png";
+        }
+
         Post post = Post.builder()
                 .title(postForm.getTitle())
                 .context(postForm.getContext())
                 .isPrivate(postForm.isPrivate())
-                .thumbnailUrl(postForm.getThumbnailUrl())
+                .thumbnailUrl(thumbnailUrl) // ...
                 .creationDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .author(author)
@@ -65,20 +72,23 @@ public class PostService {
                         return seriesRepository.save(newSeries);
                     });
             PostSeries postSeries = new PostSeries();
+
             postSeries.setPost(post);
             postSeries.setSeries(series);
             post.setPostSeries(Collections.singletonList(postSeries));
         }
 
         // 이미지 처리
-        Set<Image> images = postForm.getImageUrls().stream()
-                .map(url -> {
-                    Image image = new Image();
-                    image.setUrl(url);
-                    return imageRepository.save(image);
-                })
-                .collect(Collectors.toSet());
-        post.setImages(images);
+        if (postForm.getImageUrls() != null && !postForm.getImageUrls().isEmpty()) {
+            Set<Image> images = postForm.getImageUrls().stream()
+                    .map(url -> {
+                        Image image = new Image();
+                        image.setUrl(url);
+                        return imageRepository.save(image);
+                    })
+                    .collect(Collectors.toSet());
+            post.setImages(images);
+        }
 
         return postRepository.save(post).getId();
     }
@@ -90,6 +100,10 @@ public class PostService {
     public PostForm loadTempPost(Long userId) {
         // LocalStorage에서 불러오는 로직 구현 (프론트엔드에서 처리)
         return new PostForm(); // 실제로는 저장된 데이터를 반환
+    }
+
+    public List<String> getUserSeries(Long userId) {
+        return seriesRepository.findSeriesNamesByUserId(userId);
     }
 
 

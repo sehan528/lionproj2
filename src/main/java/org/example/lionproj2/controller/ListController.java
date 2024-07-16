@@ -26,6 +26,7 @@ public class ListController {
 
     @GetMapping("/vlog.io/lists")
     public String likedPostsPage(Model model, Authentication authentication, HttpSession session) {
+
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("User not logged in, redirecting to login page");
             return "redirect:/login";
@@ -35,7 +36,6 @@ public class ListController {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
         Long userIdLong = user.getId();
-
         log.info("User ID from authentication: {}", userIdLong);
 
         List<LikedPostDTO> likedPosts = likedPostService.getLikedPosts(userIdLong, 0, 20);
