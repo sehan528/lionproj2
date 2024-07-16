@@ -33,6 +33,6 @@ public class RecentPostController {
 
         userSessionUtil.addUserInfoToModel(session, model);
 
-        return "recent-posts";
+        return "read-posts";
     }
 }

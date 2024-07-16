@@ -13,6 +13,11 @@
         <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
         <p>By <span th:text="${post.authorName}">Author Name</span></p>
         <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
+        <button class="read-more-btn"
+                th:data-author-name="${post.authorName}"
+                th:data-post-title="${post.title}">
+            Read More
+        </button>
     </div>
 </div>
 <div id="loading" style="display: none;">Loading more posts...</div>
@@ -27,6 +32,13 @@
             loadMorePosts();
         }
     });
+
+    $(document).on('click', '.read-more-btn', function() {
+        var authorName = $(this).data('author-name');
+        var postTitle = $(this).data('post-title');
+        window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
+    });
+
 
     function loadMorePosts() {
         if(loading || allLoaded) return;
