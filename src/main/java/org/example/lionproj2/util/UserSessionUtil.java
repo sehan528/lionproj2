@@ -24,4 +24,13 @@ public class UserSessionUtil {
             model.addAttribute("isLoggedIn", false);
         }
     }
+
+    public String getUsername(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) {
+            return userService.getUsernameById(userId);
+        }
+        return null;
+    }
+
 }

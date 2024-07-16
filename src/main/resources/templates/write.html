@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>글 작성</title>
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+</head>
+<body>
+<h1>글 작성</h1>
+<form id="postForm" th:action="@{/vlog.io/write}" method="post">
+    <input type="text" id="title" name="title" placeholder="제목" required>
+    <input type="text" id="tags" name="tags" placeholder="태그 (쉼표로 구분)">
+    <div id="editor"></div>
+    <input type="hidden" id="context" name="context">
+    <button type="button" onclick="tempSave()">임시 저장</button>
+    <button type="button" onclick="showPublishOptions()">출간하기</button>
+</form>
+
+<div id="publishOptions" style="display: none;">
+    <input type="file" id="thumbnailUpload" accept="image/*">
+    <select id="visibility" name="isPrivate">
+        <option value="false">전체 공개</option>
+        <option value="true">비공개</option>
+    </select>
+    <input type="text" id="seriesName" name="seriesName" placeholder="시리즈 이름">
+    <button type="button" onclick="publishPost()">출간</button>
+</div>
+
+<script th:inline="javascript">
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        height: '500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical'
+    });
+
+    function tempSave() {
+        const postData = {
+            title: document.getElementById('title').value,
+            tags: document.getElementById('tags').value.split(','),
+            context: editor.getMarkdown()
+        };
+        localStorage.setItem('tempPost', JSON.stringify(postData));
+        alert('임시 저장되었습니다.');
+    }
+
+    function loadTempPost() {
+        const tempPost = JSON.parse(localStorage.getItem('tempPost'));
+        if (tempPost) {
+            if (confirm('임시 저장된 글이 있습니다. 불러오시겠습니까?')) {
+                document.getElementById('title').value = tempPost.title;
+                document.getElementById('tags').value = tempPost.tags.join(',');
+                editor.setMarkdown(tempPost.context);
+            } else {
+                localStorage.removeItem('tempPost');
+            }
+        }
+    }
+
+    function showPublishOptions() {
+        document.getElementById('publishOptions').style.display = 'block';
+    }
+
+    function publishPost() {
+        document.getElementById('context').value = editor.getMarkdown();
+        document.getElementById('postForm').submit();
+    }
+
+    window.onload = loadTempPost;
+</script>
+</body>
+</html>
