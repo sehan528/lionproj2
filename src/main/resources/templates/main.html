@@ -1,55 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" >
+<html lang="ko">
 <head>
-    <title>Trending Posts</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velog</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div th:replace="fragments/navbar :: navbar"></div>
-<h1>Trending Posts</h1>
-<div>
-    <a href="#" class="period-link" data-period="week" th:classappend="${period == 'week'} ? 'active' : ''">This Week</a>
-    <a href="#" class="period-link" data-period="month" th:classappend="${period == 'month'} ? 'active' : ''">This Month</a>
-</div>
-<div id="posts-container">
-    <div th:each="post : ${trendingPosts}" class="post">
-        <h2 th:text="${post.title}">Post Title</h2>
-        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-        <p>By <span th:text="${post.authorName}">Author Name</span></p>
-        <p>Updated: <span th:text="${#temporals.format(post.updateDate, 'yyyy-MM-dd HH:mm')}">Update Date</span></p>
-        <p>Likes: <span th:text="${post.likeCount}">Like Count</span></p>
-        <button class="read-more-btn"
-                th:data-author-name="${post.authorName}"
-                th:data-post-title="${post.title}">
-            Read More
-        </button>
+<body class="bg-gray-100">
+<nav class="bg-white shadow-md">
+    <div th:replace="fragments/navbar :: navbar"></div>
+</nav>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="flex space-x-4 mb-6">
+        <a href="/" class="text-lg font-semibold text-gray-900 border-b-2 border-gray-900 pb-2">Trend</a>
+        <a href="/vlog.io/read" class="text-lg font-semibold text-gray-500 hover:text-gray-900 pb-2">Recent</a>
     </div>
+
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex space-x-2">
+            <button class="period-link px-3 py-1 bg-gray-200 rounded-full text-sm font-medium" data-period="week">이번 주</button>
+            <button class="period-link px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-500" data-period="month">이번 달</button>
+        </div>
+    </div>
+
+    <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 게시글들이 여기에 동적으로 추가 -->
+    </div>
+
+    <div id="loading" class="text-center py-4 hidden">게시글을 더 불러오는 중...</div>
 </div>
-<div id="loading" style="display: none;">Loading more posts...</div>
 
 <script th:inline="javascript">
-    var page = 1;
+    var page = 0;
     var loading = false;
     var allLoaded = false;
     var period = /*[[${period}]]*/ 'week';
+    var size = 10;
 
     $(document).ready(function() {
         $('.period-link').click(function(event) {
             event.preventDefault();
             period = $(this).data('period');
-            page = 1; // Reset page number
-            allLoaded = false; // Reset allLoaded
-            $('#posts-container').empty(); // Clear current posts
-            loadMorePosts(); // Load new posts for selected period
-            $('.period-link').removeClass('active'); // Remove active class from all links
-            $(this).addClass('active'); // Add active class to the clicked link
+            page = 0;
+            allLoaded = false;
+            $('#posts-container').empty();
+            loadMorePosts();
+            $('.period-link').removeClass('bg-gray-200 text-gray-900').addClass('bg-white text-gray-500');
+            $(this).removeClass('bg-white text-gray-500').addClass('bg-gray-200 text-gray-900');
         });
 
-        $(document).on('click', '.read-more-btn', function() {
-            var authorName = $(this).data('author-name');
-            var postTitle = $(this).data('post-title');
-            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
-        });
+        if ($('#posts-container').children().length === 0) {
+            loadMorePosts();
+        }
     });
 
     $(window).scroll(function() {
@@ -61,37 +65,55 @@
     function loadMorePosts() {
         if (loading || allLoaded) return;
         loading = true;
-        $('#loading').show();
+        $('#loading').removeClass('hidden');
 
         $.ajax({
             url: '/api/v1/trending/' + period,
-            data: { page: page, size: 20 },
+            data: { page: page, size: size },
+            dataType: 'json',
             success: function(data) {
                 if (data.length > 0) {
                     data.forEach(function(post) {
-                        var postHtml = '<div class="post">' +
-                            '<h2>' + post.title + '</h2>' +
-                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
-                            '<p>By ' + post.authorName + '</p>' +
-                            '<p>Updated: ' + new Date(post.updateDate).toLocaleString() + '</p>' +
-                            '<p>Likes: ' + post.likeCount + '</p>' +
-                            '<button class="read-more-btn" data-author-name="' + post.authorName + '" data-post-title="' + post.title + '">Read More</button>' +
-                            '</div>';
+                        var postHtml = `
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                                <img src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h2 class="text-xl font-semibold mb-2">${post.title}</h2>
+                                    <p class="text-gray-600 text-sm mb-4">${post.context}</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="${post.profile_img}" alt="Author" class="w-6 h-6 rounded-full">
+                                            <span class="text-sm text-gray-600">by ${post.authorName}</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path>
+                                            </svg>
+                                            <span class="text-sm text-gray-600">${post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                         $('#posts-container').append(postHtml);
                     });
                     page++;
+                    if (data.length < size) {
+                        allLoaded = true;
+                        $('#loading').text('더 이상 게시글이 없습니다.');
+                    }
                 } else {
                     allLoaded = true;
-                    $('#loading').text('No more posts to load.');
+                    $('#loading').text('더 이상 게시글이 없습니다.');
                 }
             },
-            error: function() {
-                $('#loading').text('Error loading posts. Please try again.');
+            error: function(xhr, status, error) {
+                $('#loading').text('게시글을 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.');
             },
             complete: function() {
                 loading = false;
                 if (!allLoaded) {
-                    $('#loading').hide();
+                    $('#loading').addClass('hidden');
                 }
             }
         });

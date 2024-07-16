@@ -31,7 +31,13 @@ public class RecentPostView {
     private String thumbnailUrl;
 
     @Column(insertable = false, updatable = false)
+    private String context;
+
+    @Column(insertable = false, updatable = false)
     private String authorName;
+
+    @Column(insertable = false, updatable = false)
+    private String profile_img;
 
     @Column(insertable = false, updatable = false)
     private LocalDateTime creationDate;

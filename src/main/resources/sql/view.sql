@@ -17,11 +17,21 @@ ORDER BY like_count DESC, p.update_date DESC;
 -- ORDER BY p.creation_date DESC;
 
 CREATE OR REPLACE VIEW recent_posts_view AS
-SELECT rv.id, rv.user_id, rv.post_id, p.title, p.thumbnail_url, u.name AS author_name, p.creation_date, rv.view_date
+SELECT rv.id,
+       rv.user_id,
+       rv.post_id,
+       p.title,
+       p.thumbnail_url,
+       p.context,
+       u.name AS author_name,
+       u.profile_img,
+       p.creation_date,
+       rv.view_date
 FROM recent_views rv
          JOIN posts p ON rv.post_id = p.id
          JOIN users u ON p.author_id = u.id
 ORDER BY rv.view_date DESC;
+
 
 -- 사용자 프로필 뷰 (b-1, b-2, b-3)
 CREATE VIEW user_profile_view AS

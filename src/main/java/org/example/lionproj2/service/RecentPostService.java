@@ -46,6 +46,7 @@ public class RecentPostService {
                 .title(view.getTitle())
                 .thumbnailUrl(view.getThumbnailUrl())
                 .authorName(view.getAuthorName())
+                .profile_img(view.getProfile_img())
                 .creationDate(view.getCreationDate())
                 .viewDate(view.getViewDate())
                 .build();

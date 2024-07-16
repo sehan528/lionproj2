@@ -17,15 +17,18 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByAuthorOrderByCreationDateDesc(User author);
 
-    // 추후에 Injection 고려할 수 있도록 하자.
+
+    // 검색 기능. 추후에 Injection 고려할 수 있도록 하자.
     @Query("SELECT p FROM Post p WHERE " +
             "LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(p.context) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "EXISTS (SELECT t FROM p.tags t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<Post> searchPosts(@Param("query") String query, Pageable pageable);
 
+    // post period search
+    @Query("SELECT p FROM Post p WHERE p.updateDate >= :startDate ORDER BY p.creationDate DESC")
+    List<Post> findTrendingPosts(@Param("startDate") LocalDateTime startDate, Pageable pageable);
 }
-
 
 
 

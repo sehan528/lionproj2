@@ -1,5 +1,6 @@
 package org.example.lionproj2.service;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.PostSummaryDTO;
@@ -82,5 +83,13 @@ public class UserProfileService {
                     return new UserNotFoundException("User not found with id: " + userId);
                 });
     }
+
+    @Transactional(readOnly = true)
+    public String getUserProfileImgById(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getProfileImg)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+    }
+
 
 }

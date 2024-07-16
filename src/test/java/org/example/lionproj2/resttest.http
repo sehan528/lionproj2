@@ -22,3 +22,28 @@ username=testuser&password=Vkdlf123!
 ### tset
 GET http://localhost:8080/testuser
 Content-Type: application/json
+
+###
+# Request to get trending posts for the week
+GET http://localhost:8080/api/v1/trending/week
+Content-Type: application/json
+
+###
+# Request to get trending posts for the month
+GET http://localhost:8080/api/v1/trending/month
+Content-Type: application/json
+
+###
+# Request to get trending posts for the week with pagination
+GET http://localhost:8080/api/v1/trending/week?page=1&size=2
+Content-Type: application/json
+
+###
+# Request to get trending posts for the month with pagination
+GET http://localhost:8080/api/v1/trending/month?page=1&size=2
+Content-Type: application/json
+
+###
+# 최근 글 확인
+GET http://localhost:8080/api/v1/recent
+Content-Type: application/json

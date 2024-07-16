@@ -1,104 +1,233 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title th:text="${userProfile.name} + '의 프로필'">User Profile</title>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--</head>-->
+<!--<body class="bg-gray-100">-->
+<!--<div th:replace="fragments/navbar :: navbar"></div>-->
+
+<!--<div class="container mx-auto px-4 py-8">-->
+<!--    <div class="bg-white shadow-md rounded-lg p-6 mb-8">-->
+<!--        <div class="flex items-center space-x-4">-->
+<!--            <img th:if="${userProfile.profileImg}" th:src="${userProfile.profileImg}" alt="Profile Image" class="w-24 h-24 rounded-full object-cover">-->
+<!--            <div>-->
+<!--                <h1 th:text="${userProfile.name}" class="text-2xl font-bold"></h1>-->
+<!--                <p th:text="${userProfile.userId}" class="text-gray-600"></p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8">-->
+<!--        <div class="flex border-b">-->
+<!--            <button onclick="showContent('posts')" id="postsTab" class="flex-1 py-2 px-4 focus:outline-none transition-colors duration-200" th:classappend="${currentPage == 'posts' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}">Posts</button>-->
+<!--            <button onclick="showContent('series')" id="seriesTab" class="flex-1 py-2 px-4 focus:outline-none transition-colors duration-200" th:classappend="${currentPage == 'series' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}">Series</button>-->
+<!--            <button onclick="showContent('about')" id="aboutTab" class="flex-1 py-2 px-4 focus:outline-none transition-colors duration-200" th:classappend="${currentPage == 'about' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}">About</button>-->
+<!--        </div>-->
+
+<!--        <div id="postsContainer" th:classappend="${currentPage == 'posts' ? '' : 'hidden'}" class="p-6">-->
+<!--            <div th:if="${#lists.isEmpty(userProfile.posts)}" class="text-center text-gray-600">-->
+<!--                <p>No posts available.</p>-->
+<!--            </div>-->
+
+<!--            <div class="mb-6">-->
+<!--                <h3 class="text-lg font-semibold mb-2">태그</h3>-->
+<!--                <div class="flex flex-wrap gap-2">-->
+<!--                    <button onclick="showAllPosts()" class="px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-gray-300 transition-colors duration-200">-->
+<!--                        전체보기 (<span th:text="${#lists.size(userProfile.posts)}"></span>)-->
+<!--                    </button>-->
+<!--                    <button th:data-tag="${tag?.name ?: ''}" onclick="showPostsByTag(this.getAttribute('data-tag'))">-->
+<!--                        <span th:text="${tag?.name ?: ''}"></span> (<span th:text="${tag?.count ?: 0}"></span>)-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div th:if="${not #lists.isEmpty(userProfile.posts)}" class="space-y-6">-->
+<!--                <div th:each="post : ${userProfile.posts}" class="post bg-white shadow-md rounded-lg overflow-hidden">-->
+<!--                    <img th:if="${post.thumbnailUrl}" th:src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">-->
+<!--                    <div class="p-4">-->
+<!--                        <h2 th:text="${post.title}" class="text-xl font-semibold mb-2"></h2>-->
+<!--                        <p th:text="${post.context}" class="text-gray-600 mb-4"></p>-->
+<!--                        <div class="flex flex-wrap gap-2 mb-2">-->
+<!--                            <span th:each="tag : ${post.tags}" class="tag px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">-->
+<!--                                <span th:text="${tag}"></span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                        <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}" class="text-sm text-gray-500 mb-2"></p>-->
+<!--                        <p th:text="${userProfile.name}" class="text-sm font-medium mb-2"></p>-->
+<!--                        <button class="read-more-btn bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-200"-->
+<!--                                th:data-author-name="${userProfile.name}"-->
+<!--                                th:data-post-title="${post.title}">-->
+<!--                            Read More-->
+<!--                        </button>-->
+<!--                        <p th:text="${post.isPrivate ? '비공개' : '공개'}" class="text-sm text-gray-500 mt-2"></p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div id="seriesContainer" th:classappend="${currentPage == 'series' ? '' : 'hidden'}" class="p-6">-->
+<!--            <div th:if="${#lists.isEmpty(userProfile.series)}" class="text-center text-gray-600">-->
+<!--                <p>No series available.</p>-->
+<!--            </div>-->
+
+<!--            <div th:if="${not #lists.isEmpty(userProfile.series)}" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">-->
+<!--                <div th:each="series : ${userProfile.series}" class="bg-white shadow-md rounded-lg p-4">-->
+<!--                    <h2 th:text="${series.name}" class="text-xl font-semibold mb-2"></h2>-->
+<!--                    <p th:text="${#lists.size(series.posts)} + '개의 포스트'" class="text-gray-600 mb-2"></p>-->
+<!--                    <p th:if="${not #lists.isEmpty(series.posts)}"-->
+<!--                       th:text="'마지막 업데이트: ' + ${#temporals.format(series.posts[0].creationDate, 'yyyy-MM-dd HH:mm')}"-->
+<!--                       class="text-sm text-gray-500">-->
+<!--                    </p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div id="aboutContainer" th:classappend="${currentPage == 'about' ? '' : 'hidden'}" class="p-6">-->
+<!--            <h2 class="text-2xl font-bold mb-4">About Me</h2>-->
+<!--            <p th:text="${userProfile.aboutMe}" class="text-gray-700"></p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    function showContent(contentType) {-->
+<!--        const containers = ['postsContainer', 'seriesContainer', 'aboutContainer'];-->
+<!--        const tabs = ['postsTab', 'seriesTab', 'aboutTab'];-->
+
+<!--        containers.forEach(container => {-->
+<!--            document.getElementById(container).classList.add('hidden');-->
+<!--        });-->
+
+<!--        tabs.forEach(tab => {-->
+<!--            document.getElementById(tab).classList.remove('bg-blue-500', 'text-white');-->
+<!--            document.getElementById(tab).classList.add('hover:bg-gray-100');-->
+<!--        });-->
+
+<!--        document.getElementById(contentType + 'Container').classList.remove('hidden');-->
+<!--        document.getElementById(contentType + 'Tab').classList.add('bg-blue-500', 'text-white');-->
+<!--        document.getElementById(contentType + 'Tab').classList.remove('hover:bg-gray-100');-->
+<!--    }-->
+
+<!--    function showAllPosts() {-->
+<!--        document.querySelectorAll('.post').forEach(post => post.style.display = 'block');-->
+<!--    }-->
+
+<!--    function showPostsByTag(tagName) {-->
+<!--        document.querySelectorAll('.post').forEach(post => {-->
+<!--            const hasTag = Array.from(post.querySelectorAll('.tag')).some(tag => tag.textContent.trim() === tagName);-->
+<!--            post.style.display = hasTag ? 'block' : 'none';-->
+<!--        });-->
+<!--    }-->
+
+<!--    $(document).ready(function() {-->
+<!--        $(document).on('click', '.read-more-btn', function() {-->
+<!--            var authorName = $(this).data('authorName');-->
+<!--            var postTitle = $(this).data('postTitle');-->
+<!--            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${userProfile.name} + '의 프로필'">User Profile</title>
-    <style>
-        .hidden {
-            display: none;
-        }
-
-        .active {
-            font-weight: bold;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
+<body class="bg-white">
 <div th:replace="fragments/navbar :: navbar"></div>
-<div class="user-info">
-    <img th:if="${userProfile.profileImg}" th:src="${userProfile.profileImg}" alt="Profile Image" style="width:100px;height:100px;">
-    <h1 th:text="${userProfile.name}">User Name</h1>
-    <p th:text="${userProfile.userId}">User ID</p>
-</div>
 
-<div class="tabs">
-    <a href="#" onclick="showContent('posts')" id="postsTab"
-       th:classappend="${currentPage == 'posts' ? 'active' : ''}">Posts</a>
-    <a href="#" onclick="showContent('series')" id="seriesTab" th:classappend="${currentPage == 'series' ? 'active' : ''}">Series</a>
-    <a href="#" onclick="showContent('about')" id="aboutTab"
-       th:classappend="${currentPage == 'about' ? 'active' : ''}">About</a>
-</div>
-
-<div id="postsContainer" th:classappend="${currentPage == 'posts' ? '' : 'hidden'}">
-    <div th:if="${#lists.isEmpty(userProfile.posts)}">
-        <p>No posts available.</p>
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="flex items-center space-x-4 mb-8">
+        <img th:if="${userProfile.profileImg}" th:src="${userProfile.profileImg}" alt="Profile Image" class="w-20 h-20 rounded-full object-cover">
+        <div>
+            <h1 th:text="${userProfile.name}" class="text-2xl font-bold"></h1>
+            <p th:text="${userProfile.userId}" class="text-gray-600"></p>
+        </div>
     </div>
 
-    <!-- 태그 정보 표시 -->
-    <div class="tags-container">
-        <h3>태그</h3>
-        <a href="#" onclick="showAllPosts()">전체보기 (<span th:text="${#lists.size(userProfile.posts)}"></span>)</a>
-        <th:block th:each="tag : ${userProfile.tags}">
-            <a href="#" th:data-tag="${tag.name}" onclick="showPostsByTag(this.getAttribute('data-tag'))">
-                <span th:text="${tag.name}"></span> (<span th:text="${tag.count}"></span>)
-            </a>
-        </th:block>
+<!--    <div class="flex justify-end space-x-4 text-sm text-gray-500 mb-8">-->
+<!--        <span th:text="${userProfile.postCount} + ' 개의 포스트'"></span>-->
+<!--        <span th:text="${userProfile.followerCount} + ' 팔로워'"></span>-->
+<!--    </div>-->
+
+    <div class="border-b mb-6">
+        <div class="flex space-x-6">
+            <button onclick="showContent('posts')" id="postsTab" class="py-2 px-1 border-b-2 transition-colors duration-200" th:classappend="${currentPage == 'posts' ? 'border-green-500 text-green-500' : 'border-transparent'}">글</button>
+            <button onclick="showContent('series')" id="seriesTab" class="py-2 px-1 border-b-2 transition-colors duration-200" th:classappend="${currentPage == 'series' ? 'border-green-500 text-green-500' : 'border-transparent'}">시리즈</button>
+            <button onclick="showContent('about')" id="aboutTab" class="py-2 px-1 border-b-2 transition-colors duration-200" th:classappend="${currentPage == 'about' ? 'border-green-500 text-green-500' : 'border-transparent'}">소개</button>
+        </div>
     </div>
 
-    <!-- 게시글 목록 -->
-    <div th:if="${not #lists.isEmpty(userProfile.posts)}" class="posts-container">
-        <div th:each="post : ${userProfile.posts}" class="post">
-            <img th:if="${post.thumbnailUrl}" th:src="${post.thumbnailUrl}" alt="Thumbnail">
-            <h2 th:text="${post.title}">Post Title</h2>
-            <p th:text="${post.context}">Post Context</p>
-            <div class="post-tags">
-                <span th:each="tag : ${post.tags}" class="tag" th:text="${tag}"></span>
+    <div id="postsContainer" th:classappend="${currentPage != 'posts' ? 'hidden' : ''}">
+        <div class="mb-6">
+            <input type="text" placeholder="검색어를 입력하세요" class="w-full p-2 border rounded-md">
+        </div>
+
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">태그 목록</h3>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="showAllPosts()" class="px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-gray-300 transition-colors duration-200">
+                    전체보기 (<span th:text="${#lists.size(userProfile.posts)}"></span>)
+                </button>
+                <button th:each="tag : ${userProfile.tags}"
+                        th:data-tag="${tag?.name ?: ''}"
+                        onclick="showPostsByTag(this.getAttribute('data-tag'))"
+                        class="px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-gray-300 transition-colors duration-200">
+                    <span th:text="${tag?.name ?: ''}"></span> (<span th:text="${tag?.count ?: 0}"></span>)
+                </button>
             </div>
-            <p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
-            <p th:text="${userProfile.name}"></p>
-            <button class="read-more-btn"
-                    th:data-author-name="${userProfile.name}"
-                    th:data-post-title="${post.title}">
-                Read More
-            </button>
-            <p th:text="${post.isPrivate ? '비공개' : '공개'}">Visibility</p>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(userProfile.posts)}" class="space-y-8">
+            <div th:each="post : ${userProfile.posts}" class="border-b pb-8">
+                <h2 th:text="${post.title}" class="text-2xl font-bold mb-2"></h2>
+                <p th:text="${post.context}" class="text-gray-600 mb-4"></p>
+                <div class="flex flex-wrap gap-2 mb-2">
+                        <span th:each="tag : ${post.tags}" class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                            <span th:text="${tag}"></span>
+                        </span>
+                </div>
+                <p th:text="${#temporals.format(post.creationDate, 'yyyy년 M월 d일')}" class="text-sm text-gray-500"></p>
+                <p th:text="${post.isPrivate ? '비공개' : '공개'}" class="text-sm text-gray-500 mt-1"></p>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="seriesContainer" th:classappend="${currentPage == 'series' ? '' : 'hidden'}">
-    <div th:if="${#lists.isEmpty(userProfile.series)}">
-        <p>No series available.</p>
-    </div>
+    <div id="seriesContainer" th:classappend="${currentPage == 'series' ? '' : 'hidden'}" class="p-6">
+        <div th:if="${#lists.isEmpty(userProfile.series)}" class="text-center text-gray-600">
+            <p>No series available.</p>
+        </div>
 
-    <div th:if="${not #lists.isEmpty(userProfile.series)}" class="series-container">
-        <div th:each="series : ${userProfile.series}" class="series">
-            <h2 th:text="${series.name}">Series Name</h2>
-            <p th:text="${#lists.size(series.posts)} + '개의 포스트'">Post Count</p>
-            <p th:if="${not #lists.isEmpty(series.posts)}"
-               th:text="'마지막 업데이트: ' + ${#temporals.format(series.posts[0].creationDate, 'yyyy-MM-dd HH:mm')}">
-                Last Update Date
-            </p>
+        <div th:if="${not #lists.isEmpty(userProfile.series)}" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div th:each="series : ${userProfile.series}" class="bg-white shadow-md rounded-lg p-4">
+                <h2 th:text="${series.name}" class="text-xl font-semibold mb-2"></h2>
+                <p th:text="${#lists.size(series.posts)} + '개의 포스트'" class="text-gray-600 mb-2"></p>
+                <p th:if="${not #lists.isEmpty(series.posts)}"
+                   th:text="'마지막 업데이트: ' + ${#temporals.format(series.posts[0].creationDate, 'yyyy-MM-dd HH:mm')}"
+                   class="text-sm text-gray-500">
+                </p>
+            </div>
         </div>
     </div>
+
+    <div id="aboutContainer" th:classappend="${currentPage == 'about' ? '' : 'hidden'}" class="p-6">
+        <h2 class="text-2xl font-bold mb-4">About Me</h2>
+        <p th:text="${userProfile.aboutMe}" class="text-gray-700"></p>
+    </div>
+
 </div>
 
-<div id="aboutContainer" th:classappend="${currentPage == 'about' ? '' : 'hidden'}">
-    <h2>About Me</h2>
-    <p th:text="${userProfile.aboutMe}">About Me content</p>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // 이벤트 위임을 사용하여 동적으로 생성된 버튼에도 이벤트 리스너를 적용
-        $(document).on('click', '.read-more-btn', function() {
-            var authorName = $(this).data('authorName');
-            var postTitle = $(this).data('postTitle');
-            console.log(authorName, postTitle);
-            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
-        });
-    });
-
     function showContent(contentType) {
         const containers = ['postsContainer', 'seriesContainer', 'aboutContainer'];
         const tabs = ['postsTab', 'seriesTab', 'aboutTab'];
@@ -108,11 +237,13 @@
         });
 
         tabs.forEach(tab => {
-            document.getElementById(tab).classList.remove('active');
+            document.getElementById(tab).classList.remove('border-green-500', 'text-green-500');
+            document.getElementById(tab).classList.add('border-transparent');
         });
 
         document.getElementById(contentType + 'Container').classList.remove('hidden');
-        document.getElementById(contentType + 'Tab').classList.add('active');
+        document.getElementById(contentType + 'Tab').classList.add('border-green-500', 'text-green-500');
+        document.getElementById(contentType + 'Tab').classList.remove('border-transparent');
     }
 
     function showAllPosts() {

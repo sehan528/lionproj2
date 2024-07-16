@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
+// likeCount 집계하는 방법 도안해서 builder 에 붙여야 합니다!
 public class PostMapper {
 
     public TrendingPostDTO postToTrendingPostDTO(Post post) {
@@ -19,19 +20,29 @@ public class PostMapper {
                 .id(post.getId())
                 .title(post.getTitle())
                 .thumbnailUrl(post.getThumbnailUrl())
-
+                .context(post.getContext())
                 .authorName(post.getAuthor().getName())
+                .profile_img(post.getAuthor().getProfileImg())
+                .createdAt(post.getCreationDate())
                 .updateDate(post.getUpdateDate())
-                .likeCount(post.getLikes().size())
+                .likeCount(post.getLikes() != null ? post.getLikes().size() : 0)
                 .build();
     }
 
     public RecentPostDTO postToRecentPostDTO(Post post) {
         return RecentPostDTO.builder()
+//                .id(post.getId())
+//                .title(post.getTitle())
+//                .thumbnailUrl(post.getThumbnailUrl())
+//                .authorName(post.getAuthor().getName())
+//                .creationDate(post.getCreationDate())
+//                .build();
                 .id(post.getId())
                 .title(post.getTitle())
                 .thumbnailUrl(post.getThumbnailUrl())
+                .context(post.getContext())
                 .authorName(post.getAuthor().getName())
+                .profile_img(post.getAuthor().getProfileImg())
                 .creationDate(post.getCreationDate())
                 .build();
     }
