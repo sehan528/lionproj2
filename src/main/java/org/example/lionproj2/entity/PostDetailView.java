@@ -1,5 +1,6 @@
 package org.example.lionproj2.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -18,6 +19,8 @@ public class PostDetailView {
     private String title;
     private String context;
     private String authorName;
+    @Column(name="author_profile_img")
+    private String authorProfileImg;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private String thumbnailUrl;

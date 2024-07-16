@@ -21,6 +21,7 @@ public class PostDetailViewMapper {
                 .likeCount(view.getLikeCount())
                 .tags(Arrays.asList(view.getTags().split(",")))
                 .seriesName(view.getSeriesName())
+                .authorProfileImg(view.getAuthorProfileImg())
 //                .seriesOrder(view.getSeriesOrder())
                 .isLiked(isLiked)
                 .build();

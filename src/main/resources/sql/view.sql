@@ -48,19 +48,28 @@ GROUP BY u.id;
 
 -- 포스트 상세 뷰 (b-4)
 CREATE VIEW post_detail_view AS
-SELECT p.id, p.title, p.context, p.thumbnail_url,
-       u.name AS author_name, p.creation_date, p.update_date,
-       COUNT(DISTINCT l.id) AS like_count,
-       GROUP_CONCAT(DISTINCT t.name) AS tags,
-       s.name AS series_name
-FROM posts p
-         JOIN users u ON p.author_id = u.id
-         LEFT JOIN likes l ON p.id = l.post_id
-         LEFT JOIN post_tags pt ON p.id = pt.post_id
-         LEFT JOIN tags t ON pt.tag_id = t.id
-         LEFT JOIN post_series ps ON p.id = ps.post_id
-         LEFT JOIN series s ON ps.series_id = s.id
-GROUP BY p.id;
+SELECT
+    p.id,
+    p.title,
+    p.context,
+    p.thumbnail_url,
+    u.name AS author_name,
+    u.profile_img AS author_profile_img,  -- 추가된 부분
+    p.creation_date,
+    p.update_date,
+    COUNT(DISTINCT l.id) AS like_count,
+    GROUP_CONCAT(DISTINCT t.name) AS tags,
+    s.name AS series_name
+FROM
+    posts p
+        JOIN users u ON p.author_id = u.id
+        LEFT JOIN likes l ON p.id = l.post_id
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+        LEFT JOIN post_series ps ON p.id = ps.post_id
+        LEFT JOIN series s ON ps.series_id = s.id
+GROUP BY
+    p.id, u.name, u.profile_img;  -- u.profile_img 추가
 
 -- 좋아요 목록 뷰 (C-1)
 -- CREATE VIEW liked_posts_view AS
@@ -78,6 +87,7 @@ SELECT
     p.title,
     p.thumbnail_url,
     u.name AS author_name,
+    u.profile_img,       -- 추가된 컬럼
     p.creation_date,
     l.created_at AS liked_at
 FROM
@@ -86,6 +96,7 @@ FROM
         JOIN users u ON p.author_id = u.id
 ORDER BY
     l.created_at DESC;
+
 
 -- 최근 읽은 글 뷰 (C-2)
 CREATE VIEW recent_read_posts_view AS

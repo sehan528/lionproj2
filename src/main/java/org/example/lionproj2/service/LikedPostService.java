@@ -39,6 +39,7 @@ public class LikedPostService {
                 .title(view.getTitle())
                 .thumbnailUrl(view.getThumbnailUrl())
                 .authorName(view.getAuthorName())
+                .authorProfileUrl(view.getAuthorProfileUrl())
                 .creationDate(view.getCreationDate())
                 .likedAt(view.getLikedAt())
                 .build();

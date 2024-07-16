@@ -15,6 +15,7 @@ public class PostDetailViewDTO {
     private String title;
     private String context;
     private String authorName;
+    private String authorProfileImg;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private String thumbnailUrl;

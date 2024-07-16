@@ -23,6 +23,8 @@ public class LikedPostView {
     private String title;
     private String thumbnailUrl;
     private String authorName;
+    @Column(name ="profile_img")
+    private String authorProfileUrl;
     private LocalDateTime creationDate;
     private LocalDateTime likedAt;
 }

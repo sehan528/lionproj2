@@ -31,11 +31,14 @@ public class PostController {
         Long sessionUserId = (Long) session.getAttribute("userId");
         Long effectiveUserId = sessionUserId != null ? sessionUserId : userId;
 
+        // Post 디테일 (유저, 글 정보 포함..)
         PostDetailViewDTO postDetail = postDetailService.getPostDetailByUsernameAndPostname(username, postname, effectiveUserId);
 
         model.addAttribute("post", postDetail);
+        model.addAttribute("postContent", postDetail.getContext());
         model.addAttribute("userId", effectiveUserId);
 
+        // 시리즈 정보
         if (postDetail.getSeriesName() != null) {
             List<PostSummaryDTO> seriesPosts = postDetailService.getSeriesPostsBySeriesName(postDetail.getSeriesName());
 

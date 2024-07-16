@@ -1,36 +1,71 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" class="bg-gray-100" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Settings</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User account setting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 <div th:replace="fragments/navbar :: navbar"></div>
-<h1>User Settings</h1>
-<form th:action="@{/vlog.io/setting/update}" method="post" th:object="${user}">
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" th:field="*{name}" required>
-    </div>
-    <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" th:field="*{email}" required>
-    </div>
-    <button type="submit">Update Info</button>
-</form>
 
-<h2>Profile Image</h2>
-<img th:src="@{${user.profileImg}}" alt="Profile Image" style="width:100px;height:100px;">
-<form th:action="@{/vlog.io/setting/upload-profile}" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button type="submit">Upload Image</button>
-</form>
-<form th:action="@{/vlog.io/setting/remove-profile}" method="post">
-    <button type="submit">Remove Image</button>
-</form>
+<div class="flex-grow flex items-center justify-center py-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden p-6">
+            <div class="flex items-center mb-8">
+                <img th:src="${user.profileImg}" alt="프로필 이미지" class="w-20 h-20 rounded-full mr-4">
+                <div>
+                    <h1 class="text-2xl font-bold" th:text="${user.name}">Se Han</h1>
+                    <p class="text-gray-600" th:text="${user.userId}">user.name</p>
+                </div>
+            </div>
 
-<h2>Delete Account</h2>
-<form th:action="@{/vlog.io/setting/delete-account}" method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
-    <button type="submit">Delete Account</button>
-</form>
+            <div class="mb-4">
+                <form th:action="@{/vlog.io/setting/upload-profile}" method="post" enctype="multipart/form-data" class="inline">
+                    <input type="file" name="file" required class="hidden" id="profileImageInput">
+                    <button type="button" onclick="document.getElementById('profileImageInput').click()" class="bg-teal-500 text-white px-4 py-2 rounded mr-2 hover:bg-teal-600 transition duration-300">이미지 업로드</button>
+                    <button type="submit" id="uploadSubmit" class="hidden">Upload</button>
+                </form>
+                <form th:action="@{/vlog.io/setting/remove-profile}" method="post" class="inline">
+                    <button type="submit" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition duration-300">이미지 제거</button>
+                </form>
+            </div>
+
+            <form th:action="@{/vlog.io/setting/update}" method="post" th:object="${user}">
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold">벨로그 제목</h2>
+                        <button type="submit" class="text-teal-500 hover:text-teal-600 transition duration-300">수정</button>
+                    </div>
+                    <input type="text" th:field="*{name}" class="w-full p-2 border border-gray-300 rounded" placeholder="sehan.log">
+                    <p class="text-sm text-gray-500 mt-2">개인 페이지의 좌측 상단에 나타나는 페이지 제목입니다.</p>
+                </div>
+
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-semibold">이메일 주소</h2>
+                        <button type="submit" class="text-teal-500 hover:text-teal-600 transition duration-300">변경</button>
+                    </div>
+                    <input type="email" th:field="*{email}" class="w-full p-2 border border-gray-300 rounded" placeholder="sehan528@gmail.com">
+                    <p class="text-sm text-gray-500 mt-2">회원 인증 또는 시스템에서 발송하는 이메일을 수신하는 주소입니다.</p>
+                </div>
+            </form>
+
+            <div>
+                <h2 class="text-xl font-semibold mb-2">회원 탈퇴</h2>
+                <form th:action="@{/vlog.io/setting/delete-account}" method="post" onsubmit="return confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">회원 탈퇴</button>
+                </form>
+                <p class="text-sm text-gray-500 mt-2">탈퇴 시 작성하신 포스트 및 댓글이 모두 삭제되지 않습니다.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('profileImageInput').addEventListener('change', function() {
+        document.getElementById('uploadSubmit').click();
+    });
+</script>
 </body>
 </html>

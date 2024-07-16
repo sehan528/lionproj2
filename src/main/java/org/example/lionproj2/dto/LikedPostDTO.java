@@ -14,6 +14,7 @@ public class LikedPostDTO {
     private String title;
     private String thumbnailUrl;
     private String authorName;
+    private String authorProfileUrl;
     private LocalDateTime creationDate;
     private LocalDateTime likedAt;
 }

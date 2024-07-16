@@ -1,42 +1,83 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${post.title}"></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${post.title}">게시글 제목</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.css" />
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.js"></script>
 </head>
-<body>
+<body class="bg-gray-100">
 <div th:replace="fragments/navbar :: navbar"></div>
-<h1 th:text="${post.title}"></h1>
-<p th:text="${post.authorName}"></p>
-<p th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}"></p>
-<div th:utext="${post.context}"></div>
 
-<div>
-    <span th:each="tag : ${post.tags}" th:text="${tag}" class="tag"></span>
+<div class="container mx-auto px-4 py-8">
+    <h1 th:text="${post.title}" class="text-4xl font-bold mb-4">게시글 제목</h1>
+    <div class="flex items-center mb-4">
+        <img th:src="${post.authorProfileImg}" alt="Author" class="w-10 h-10 rounded-full mr-4">
+        <div>
+            <p th:text="${post.authorName}" class="font-semibold">작성자 이름</p>
+            <p th:text="${#temporals.format(post.creationDate, 'yyyy년 MM월 dd일')}" class="text-sm text-gray-500">작성일</p>
+        </div>
+    </div>
+
+<!--    여기에 동적으로 추가됨.-->
+    <div id="viewer" class="mb-8 min-h-[200px]"></div>
+
+    <div class="mb-4">
+        <span th:each="tag : ${post.tags}" th:text="${tag}" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"></span>
+    </div>
+
+    <div th:if="${post.seriesName}" class="bg-gray-200 p-4 rounded-lg mb-8">
+        <h3 class="text-xl font-semibold mb-2">시리즈: <span th:text="${post.seriesName}"></span></h3>
+        <ul>
+            <li th:each="seriesPost : ${seriesPosts}" class="mb-2">
+                <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${seriesPost.title}}"
+                   th:text="${seriesPost.title}"
+                   class="text-blue-500 hover:underline"></a>
+            </li>
+        </ul>
+    </div>
+
+    <button id="likeButton" th:onclick="'toggleLike(' + ${post.id} + ')'"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
+        좋아요 <span id="likeCount" th:text="${post.likeCount}"></span>
+    </button>
 </div>
-
-<div th:if="${post.seriesName}">
-    <h3>Series: <span th:text="${post.seriesName}"></span></h3>
-    <ul>
-        <li th:each="seriesPost : ${seriesPosts}">
-            <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${seriesPost.title}}"
-                th:text="${seriesPost.title}"></a>
-        </li>
-    </ul>
-</div>
-
-<button id="likeButton" th:onclick="'toggleLike(' + ${post.id} + ')'">
-    Like <span id="likeCount" th:text="${post.likeCount}"></span>
-</button>
 
 <script th:inline="javascript">
     var isLiked = [[${post.isLiked}]];
     var postId = [[${post.id}]];
     var userId = [[${userId}]];
+    // var postContent = [[${post.context}]];
+    // var postContent = /*[[${postContent}]]*/ '';
+    var postContent = decodeURIComponent(/*[[${postContent}]]*/ '');
+
+    console.log("Post content:", postContent);
+
 
     $(document).ready(function() {
         updateLikeButton();
+        initViewer(initViewer, 100);
     });
+
+    function initViewer() {
+        console.log("Initializing viewer with content:", postContent);
+        try {
+            const viewer = new toastui.Editor({
+                el: document.querySelector('#viewer'),
+                initialValue: postContent,
+                viewer: true,
+                height: 'auto'
+            });
+            console.log("Viewer initialized");
+        } catch (error) {
+            console.error("Error initializing viewer:", error);
+            // 폴백: 일반 HTML로 내용 표시
+            document.querySelector('#viewer').innerHTML = postContent;
+        }
+    }
 
     function toggleLike(postId) {
         $.ajax({
@@ -58,11 +99,11 @@
     function updateLikeButton() {
         var $likeButton = $('#likeButton');
         if (isLiked) {
-            $likeButton.addClass('liked');
-            $likeButton.text('Unlike ' + $('#likeCount').text());
+            $likeButton.removeClass('bg-blue-500').addClass('bg-red-500');
+            $likeButton.text('좋아요 취소 ' + $('#likeCount').text());
         } else {
-            $likeButton.removeClass('liked');
-            $likeButton.text('Like ' + $('#likeCount').text());
+            $likeButton.removeClass('bg-red-500').addClass('bg-blue-500');
+            $likeButton.text('좋아요 ' + $('#likeCount').text());
         }
     }
 </script>

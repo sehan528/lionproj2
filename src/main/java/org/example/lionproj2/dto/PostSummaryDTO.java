@@ -14,6 +14,7 @@ public class PostSummaryDTO {
     private Long id;
     private String title;
     private String authorName;
+    private String authorProfileImg;
     private String thumbnailUrl;
     private String context;
     private LocalDateTime creationDate;

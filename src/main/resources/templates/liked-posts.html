@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Liked Posts</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>좋아요한 글</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100">
 <div th:replace="fragments/navbar :: navbar"></div>
-<h1>Liked Posts</h1>
-<div id="posts-container">
-    <div th:each="post : ${likedPosts}" class="post">
-        <h2 th:text="${post.title}">Post Title</h2>
-        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-        <p>By <span th:text="${post.authorName}">Author Name</span></p>
-        <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
-        <p>Liked: <span th:text="${#temporals.format(post.likedAt, 'yyyy-MM-dd HH:mm')}">Liked At</span></p>
-        <button class="read-more-btn"
-                th:data-author-name="${post.authorName}"
-                th:data-post-title="${post.title}">
-            Read More
-        </button>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">좋아요한 글</h1>
+
+    <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="post : ${likedPosts}" class="bg-white rounded-lg shadow-md overflow-hidden">
+            <img th:src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h2 th:text="${post.title}" class="text-xl font-semibold mb-2">게시글 제목</h2>
+                <div class="flex items-center mb-2">
+                    <img th:src="${post.authorProfileUrl}" alt="Author" class="w-6 h-6 rounded-full mr-2">
+                    <span th:text="${post.authorName}" class="text-sm text-gray-600">작성자</span>
+                </div>
+                <p class="text-sm text-gray-500 mb-1">작성일: <span th:text="${#temporals.format(post.creationDate, 'yyyy년 MM월 dd일')}">작성일</span></p>
+                <p class="text-sm text-gray-500 mb-4">좋아요한 날짜: <span th:text="${#temporals.format(post.likedAt, 'yyyy년 MM월 dd일')}">좋아요한 날짜</span></p>
+                <button class="read-more-btn bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                        th:data-author-name="${post.authorName}"
+                        th:data-post-title="${post.title}">
+                    더 보기
+                </button>
+            </div>
+        </div>
     </div>
+
+    <div id="loading" class="text-center py-4 hidden">게시글을 더 불러오는 중...</div>
 </div>
-<div id="loading" style="display: none;">Loading more posts...</div>
 
 <script th:inline="javascript">
     var page = 1;
@@ -46,7 +59,7 @@
     function loadMorePosts() {
         if (loading || allLoaded) return;
         loading = true;
-        $('#loading').show();
+        $('#loading').removeClass('hidden');
 
         $.ajax({
             url: '/api/v1/lists/liked',
@@ -54,29 +67,40 @@
             success: function(data) {
                 if (data.length > 0) {
                     data.forEach(function(post) {
-                        var postHtml = '<div class="post">' +
-                            '<h2>' + post.title + '</h2>' +
-                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
-                            '<p>By ' + post.authorName + '</p>' +
-                            '<p>Created: ' + new Date(post.creationDate).toLocaleString() + '</p>' +
-                            '<p>Liked: ' + new Date(post.likedAt).toLocaleString() + '</p>' +
-                            '<button class="read-more-btn" data-author-name="' + post.authorName + '" data-post-title="' + post.title + '">Read More</button>' +
-                            '</div>';
+                        var postHtml = `
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                                <img src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h2 class="text-xl font-semibold mb-2">${post.title}</h2>
+                                    <div class="flex items-center mb-2">
+                                        <img src="${post.authorProfileUrl}" alt="Author" class="w-6 h-6 rounded-full mr-2">
+                                        <span class="text-sm text-gray-600">${post.authorName}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-1">작성일: ${new Date(post.creationDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <p class="text-sm text-gray-500 mb-4">좋아요한 날짜: ${new Date(post.likedAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <button class="read-more-btn bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                                            data-author-name="${post.authorName}"
+                                            data-post-title="${post.title}">
+                                        더 보기
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                         $('#posts-container').append(postHtml);
                     });
                     page++;
                 } else {
                     allLoaded = true;
-                    $('#loading').text('No more posts to load.');
+                    $('#loading').text('더 이상 게시글이 없습니다.');
                 }
             },
             error: function() {
-                $('#loading').text('Error loading posts. Please try again.');
+                $('#loading').text('게시글을 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.');
             },
             complete: function() {
                 loading = false;
                 if (!allLoaded) {
-                    $('#loading').hide();
+                    $('#loading').addClass('hidden');
                 }
             }
         });

@@ -1,39 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Search Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>검색 결과</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100">
 <div th:replace="fragments/navbar :: navbar"></div>
-<h1>Search Results</h1>
-<form th:action="@{/vlog.io/search}" method="get">
-    <input type="text" name="q" th:value="${searchQuery}" placeholder="검색어를 입력하세요">
-    <button type="submit">Search</button>
-</form>
 
-<p>Total results: <span th:text="${totalResults}"></span></p>
-
-<div id="posts-container">
-    <div th:each="post : ${searchResults}" class="post">
-        <h2 th:text="${post.title}">Post Title</h2>
-        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-        <p>By <span th:text="${post.authorName}">Author Name</span></p>
-        <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
-        <div>
-            <span th:each="tag : ${post.tags}" th:text="${tag}" class="tag"></span>
+<div class="container mx-auto px-4 py-8">
+    <form th:action="@{/vlog.io/search}" method="get" class="mb-8">
+        <div class="flex">
+            <input type="text" name="q" th:value="${searchQuery}" placeholder="검색어를 입력하세요" class="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600 transition duration-300">검색</button>
         </div>
-        <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${post.title}}">Read More</a>
-    </div>
-</div>
+    </form>
 
-<div id="loading" style="display: none;">Loading more posts...</div>
+    <p class="text-gray-600 mb-4">총 <span th:text="${totalResults}" class="font-bold"></span>개의 포스트를 찾았습니다.</p>
+
+    <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="post : ${searchResults}" class="bg-white rounded-lg shadow-md overflow-hidden">
+            <img th:src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h2 th:text="${post.title}" class="text-xl font-semibold mb-2"></h2>
+                <div class="flex items-center mb-2">
+                    <img th:src="${post.thumbnailUrl}" alt="Author" class="w-6 h-6 rounded-full mr-2">
+                    <span th:text="${post.authorName}" class="text-sm text-gray-600"></span>
+                </div>
+                <p th:text="${#temporals.format(post.creationDate, 'yyyy년 MM월 dd일')}" class="text-sm text-gray-500 mb-2"></p>
+                <div class="mb-4">
+                    <span th:each="tag : ${post.tags}" th:text="${tag}" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"></span>
+                </div>
+                <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${post.title}}" class="text-blue-500 hover:underline">자세히 보기</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="text-center py-4 hidden">게시글을 더 불러오는 중...</div>
+</div>
 
 <script th:inline="javascript">
     var page = 1;
     var loading = false;
     var allLoaded = false;
-    var query = [[${searchQuery}]];
+    var query = /*[[${searchQuery}]]*/ '';
 
     $(window).scroll(function() {
         if (!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
@@ -44,7 +56,7 @@
     function loadMorePosts() {
         if (loading || allLoaded) return;
         loading = true;
-        $('#loading').show();
+        $('#loading').removeClass('hidden');
 
         $.ajax({
             url: '/api/v1/search',
@@ -52,29 +64,38 @@
             success: function(data) {
                 if (data.posts.length > 0) {
                     data.posts.forEach(function(post) {
-                        var postHtml = '<div class="post">' +
-                            '<h2>' + post.title + '</h2>' +
-                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
-                            '<p>By ' + post.authorName + '</p>' +
-                            '<p>Created: ' + new Date(post.creationDate).toLocaleString() + '</p>' +
-                            '<div>' + post.tags.map(tag => '<span class="tag">' + tag + '</span>').join('') + '</div>' +
-                            '<a href="/vlog.io/@' + post.authorName + '/' + post.title + '">Read More</a>' +
-                            '</div>';
+                        var postHtml = `
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                                <img src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h2 class="text-xl font-semibold mb-2">${post.title}</h2>
+                                    <div class="flex items-center mb-2">
+                                        <img src="${post.thumbnailUrl}" alt="Author" class="w-6 h-6 rounded-full mr-2">
+                                        <span class="text-sm text-gray-600">${post.authorName}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-2">${new Date(post.creationDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <div class="mb-4">
+                                        ${post.tags.map(tag => `<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">${tag}</span>`).join('')}
+                                    </div>
+                                    <a href="/vlog.io/@${post.authorName}/${post.title}" class="text-blue-500 hover:underline">자세히 보기</a>
+                                </div>
+                            </div>
+                        `;
                         $('#posts-container').append(postHtml);
                     });
                     page++;
                 } else {
                     allLoaded = true;
-                    $('#loading').text('No more posts to load.');
+                    $('#loading').text('더 이상 게시글이 없습니다.');
                 }
             },
             error: function() {
-                $('#loading').text('Error loading posts. Please try again.');
+                $('#loading').text('게시글을 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.');
             },
             complete: function() {
                 loading = false;
                 if (!allLoaded) {
-                    $('#loading').hide();
+                    $('#loading').addClass('hidden');
                 }
             }
         });
