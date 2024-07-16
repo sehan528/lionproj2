@@ -71,4 +71,16 @@ public class UserProfileService {
 
         return aboutMe != null ? aboutMe.getContext() : "";
     }
+
+    @Transactional(readOnly = true)
+    public String getUsernameById(Long userId) {
+        log.info("Fetching username for userId: {}", userId);
+        return userRepository.findById(userId)
+                .map(User::getName)
+                .orElseThrow(() -> {
+                    log.error("User not found with id: {}", userId);
+                    return new UserNotFoundException("User not found with id: " + userId);
+                });
+    }
+
 }

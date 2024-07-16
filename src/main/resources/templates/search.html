@@ -5,6 +5,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+<div th:replace="fragments/navbar :: navbar"></div>
 <h1>Search Results</h1>
 <form th:action="@{/vlog.io/search}" method="get">
     <input type="text" name="q" th:value="${searchQuery}" placeholder="검색어를 입력하세요">

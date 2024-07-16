@@ -3,6 +3,7 @@ package org.example.lionproj2.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.lionproj2.dto.UserProfileDTO;
 import org.example.lionproj2.service.SettingService;
+import org.example.lionproj2.util.UserSessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 public class SettingController {
 
     private final SettingService settingService;
+    private final UserSessionUtil userSessionUtil;
 
     @GetMapping
     public String settingPage(HttpSession session, Model model) {
@@ -25,6 +27,9 @@ public class SettingController {
         }
         UserProfileDTO userDTO = settingService.getUserInfo(userId);
         model.addAttribute("user", userDTO);
+
+        userSessionUtil.addUserInfoToModel(session, model);
+
         return "setting";
     }
 

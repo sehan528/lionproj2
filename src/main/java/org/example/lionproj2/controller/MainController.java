@@ -1,9 +1,12 @@
 package org.example.lionproj2.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.lionproj2.dto.RecentPostDTO;
 import org.example.lionproj2.dto.TrendingPostDTO;
 import org.example.lionproj2.service.RecentService;
 import org.example.lionproj2.service.TrendingService;
+import org.example.lionproj2.service.UserProfileService;
+import org.example.lionproj2.util.UserSessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,8 @@ public class MainController {
 
     private final TrendingService trendingService;
     private final RecentService recentService;
+    private final UserProfileService userService;
+    private final UserSessionUtil userSessionUtil;
 
     @GetMapping("/")
     public RedirectView redirectToMainPage() {
@@ -32,17 +37,24 @@ public class MainController {
 
 
     @GetMapping("/vlog.io")
-    public String mainPage(@RequestParam(defaultValue = "week") String period, Model model) {
+    public String mainPage(@RequestParam(defaultValue = "week") String period, Model model, HttpSession session) {
         List<TrendingPostDTO> trendingPosts = trendingService.getTrendingPosts(period, 0, 20);
         model.addAttribute("trendingPosts", trendingPosts);
         model.addAttribute("period", period);
+
+        userSessionUtil.addUserInfoToModel(session, model);
+
         return "main";
     }
 
+
     @GetMapping("/vlog.io/recent")
-    public String recentPage(Model model) {
+    public String recentPage(Model model, HttpSession session) {
         List<RecentPostDTO> recentPosts = recentService.getRecentPosts(0, 20);
+
         model.addAttribute("recentPosts", recentPosts);
+
+        userSessionUtil.addUserInfoToModel(session, model);
         return "recent";
     }
 }

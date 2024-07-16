@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar">
+    <a th:href="@{/vlog.io}" th:text="${username != null ? username + '.log' : 'v_log'}">v_log</a>
+    <a th:href="@{/vlog.io/search}">검색</a>
+    <a th:href="@{/vlog.io/write}">새 글 작성</a>
+    <th:block th:if="${isLoggedIn}">
+        <a th:href="@{'/vlog.io/@' + ${username} + '/posts'}">내 벨로그</a>
+        <a th:href="@{/vlog.io/lists}">읽기 목록</a>
+        <a th:href="@{/vlog.io/setting}">설정</a>
+        <a th:href="@{/logout}">로그아웃</a>
+    </th:block>
+    <th:block th:unless="${isLoggedIn}">
+        <a th:href="@{/login}">로그인</a>
+    </th:block>
+</nav>
+</body>
+</html>

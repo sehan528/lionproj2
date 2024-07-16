@@ -5,6 +5,7 @@ import org.example.lionproj2.dto.PostDetailViewDTO;
 import org.example.lionproj2.dto.PostSummaryDTO;
 import org.example.lionproj2.service.PostDetailService;
 import org.example.lionproj2.service.RecentPostService;
+import org.example.lionproj2.util.UserSessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ public class PostController {
 
     private final PostDetailService postDetailService;
     private final RecentPostService recentPostService;
+    private final UserSessionUtil userSessionUtil;
 
     @GetMapping("/vlog.io/@{username}/{postname}")
     public String getPostDetails(@PathVariable String username,
@@ -43,6 +45,8 @@ public class PostController {
         if (effectiveUserId != null) {
             recentPostService.addRecentView(effectiveUserId, postDetail.getId());
         }
+
+        userSessionUtil.addUserInfoToModel(session, model);
 
         return "post-detail";
     }

@@ -13,8 +13,9 @@
     </style>
 </head>
 <body>
+<div th:replace="fragments/navbar :: navbar"></div>
 <div class="user-info">
-    <img th:if="${userProfile.profileImg}" th:src="${userProfile.profileImg}" alt="Profile Image">
+    <img th:if="${userProfile.profileImg}" th:src="${userProfile.profileImg}" alt="Profile Image" style="width:100px;height:100px;">
     <h1 th:text="${userProfile.name}">User Name</h1>
     <p th:text="${userProfile.userId}">User ID</p>
 </div>
