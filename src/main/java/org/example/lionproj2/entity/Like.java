@@ -27,4 +27,7 @@ public class Like {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+
+
 }

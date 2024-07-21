@@ -1,77 +1,108 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Recent Posts</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>최근 게시글</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100">
 <div th:replace="fragments/navbar :: navbar"></div>
-<h1>Recent Posts</h1>
-<div id="posts-container">
-    <div th:each="post : ${recentPosts}" class="post">
-        <h2 th:text="${post.title}">Post Title</h2>
-        <img th:src="${post.thumbnailUrl}" alt="Thumbnail">
-        <p>By <span th:text="${post.authorName}">Author Name</span></p>
-        <p>Created: <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd HH:mm')}">Creation Date</span></p>
-        <button class="read-more-btn"
-                th:data-author-name="${post.authorName}"
-                th:data-post-title="${post.title}">
-            Read More
-        </button>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="flex space-x-4 mb-6">
+        <a href="/vlog.io" class="text-lg font-semibold text-gray-500 hover:text-gray-900 pb-2">Trend</a>
+        <a href="/vlog.io/recent" class="text-lg font-semibold text-gray-900 border-b-2 border-gray-900 pb-2">Recent</a>
     </div>
+
+    <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="post : ${recentPosts}" class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer post-container"
+             th:data-author-name="${post.authorName}"
+             th:data-post-title="${post.title}">
+            <img th:src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h2 th:text="${post.title}" class="text-xl font-semibold mb-2">게시글 제목</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span th:text="${'by ' + post.authorName}" class="text-sm text-gray-600">작성자</span>
+                    </div>
+                    <span th:text="${#temporals.format(post.creationDate, 'yyyy-MM-dd')}" class="text-sm text-gray-500">작성일</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="text-center py-4 hidden">게시글을 더 불러오는 중...</div>
 </div>
-<div id="loading" style="display: none;">Loading more posts...</div>
 
 <script th:inline="javascript">
     var page = 1;
     var loading = false;
     var allLoaded = false;
+    var size = 20;
+
+    $(document).ready(function() {
+        $(document).on('click', '.post-container', function() {
+            var authorName = $(this).data('author-name');
+            var postTitle = $(this).data('post-title');
+            window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
+        });
+    });
 
     $(window).scroll(function() {
-        if(!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+        if (!allLoaded && $(window).scrollTop() + $(window).height() > $(document).height() - 100) {
             loadMorePosts();
         }
     });
 
-    $(document).on('click', '.read-more-btn', function() {
-        var authorName = $(this).data('author-name');
-        var postTitle = $(this).data('post-title');
-        window.location.href = '/vlog.io/@' + authorName + '/' + postTitle;
-    });
-
-
     function loadMorePosts() {
-        if(loading || allLoaded) return;
+        if (loading || allLoaded) return;
         loading = true;
-        $('#loading').show();
+        $('#loading').removeClass('hidden');
 
         $.ajax({
             url: '/api/v1/recent',
-            data: { page: page, size: 20 },
+            data: { page: page, size: size },
+            dataType: 'json',
             success: function(data) {
-                if(data.length > 0) {
+                if (data.length > 0) {
                     data.forEach(function(post) {
-                        var postHtml = '<div class="post">' +
-                            '<h2>' + post.title + '</h2>' +
-                            '<img src="' + post.thumbnailUrl + '" alt="Thumbnail">' +
-                            '<p>By ' + post.authorName + '</p>' +
-                            '<p>Created: ' + new Date(post.creationDate).toLocaleString() + '</p>' +
-                            '</div>';
+                        var postHtml = `
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer post-container"
+                                 data-author-name="${post.authorName}"
+                                 data-post-title="${post.title}">
+                                <img src="${post.thumbnailUrl}" alt="Thumbnail" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h2 class="text-xl font-semibold mb-2">${post.title}</h2>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-600">by ${post.authorName}</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500">${new Date(post.creationDate).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                         $('#posts-container').append(postHtml);
                     });
                     page++;
+                    if (data.length < size) {
+                        allLoaded = true;
+                        $('#loading').text('더 이상 게시글이 없습니다.');
+                    }
                 } else {
                     allLoaded = true;
-                    $('#loading').text('No more posts to load.');
+                    $('#loading').text('더 이상 게시글이 없습니다.');
                 }
             },
             error: function() {
-                $('#loading').text('Error loading posts. Please try again.');
+                $('#loading').text('게시글을 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.');
             },
             complete: function() {
                 loading = false;
-                if(!allLoaded) {
-                    $('#loading').hide();
+                if (!allLoaded) {
+                    $('#loading').addClass('hidden');
                 }
             }
         });

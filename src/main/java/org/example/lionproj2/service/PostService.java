@@ -1,19 +1,25 @@
 package org.example.lionproj2.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.PostForm;
+import org.example.lionproj2.dto.PostUpdateDTO;
 import org.example.lionproj2.entity.*;
 import org.example.lionproj2.exception.PostNotFoundException;
+import org.example.lionproj2.exception.UnauthorizedException;
 import org.example.lionproj2.repository.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -105,6 +111,56 @@ public class PostService {
     public List<String> getUserSeries(Long userId) {
         return seriesRepository.findSeriesNamesByUserId(userId);
     }
+
+    public Post getPostByUsernameAndTitle(String username, String title) {
+        User user = userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        return postRepository.findByAuthorAndTitle(user, title)
+                .orElse(null);
+    }
+
+    @Transactional
+    public boolean updatePost(String userId, String originalTitle, PostUpdateDTO updatedPost) {
+        log.info("업데이트 포스트 [PostService]");
+        log.info("userId: {}, originalTitle: {}, updatedTitle: {}", userId, originalTitle, updatedPost.getTitle());
+
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+
+        log.info("유저: {} [PostService]", user);
+
+        Post post = postRepository.findByAuthorAndTitle(user, originalTitle)
+                .orElseThrow(() -> new PostNotFoundException("Post not found: " + originalTitle));
+
+        log.info("포스트: {} [PostService]", post);
+
+        post.setTitle(updatedPost.getTitle());
+        post.setContext(updatedPost.getContext());
+        post.setUpdateDate(LocalDateTime.now());
+
+        // 태그 업데이트
+        Set<Tag> tags = new HashSet<>();
+        for (String tagName : updatedPost.getTags()) {
+            // 태그 이름에서 불필요한 문자 제거 및 트림 (init 브라켓 , 삭제 버튼)
+            String cleanedTagName = tagName.replaceAll("[\\[\\]\"×]", "").trim();
+
+            if (!cleanedTagName.isEmpty()) {
+                Tag tag = tagRepository.findByName(cleanedTagName)
+                        .orElseGet(() -> tagRepository.save(new Tag(cleanedTagName)));
+                tags.add(tag);
+            }
+        }
+        post.setTags(tags);
+
+        log.info("태그: {}, 포스트: {}", tags, post);
+
+        postRepository.save(post);
+        log.info("Post updated: userId={}, oldTitle={}, newTitle={}",
+                userId, originalTitle, updatedPost.getTitle());
+        return true;
+    }
+
+
 
 
 }

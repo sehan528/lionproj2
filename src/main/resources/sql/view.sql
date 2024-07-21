@@ -54,12 +54,13 @@ SELECT
     p.context,
     p.thumbnail_url,
     u.name AS author_name,
-    u.profile_img AS author_profile_img,  -- 추가된 부분
+    u.user_id AS author_id,  -- 추가된 부분
+    u.profile_img AS author_profile_img,
     p.creation_date,
     p.update_date,
     COUNT(DISTINCT l.id) AS like_count,
     GROUP_CONCAT(DISTINCT t.name) AS tags,
-    s.name AS series_name
+    MAX(s.name) AS series_name
 FROM
     posts p
         JOIN users u ON p.author_id = u.id
@@ -69,7 +70,9 @@ FROM
         LEFT JOIN post_series ps ON p.id = ps.post_id
         LEFT JOIN series s ON ps.series_id = s.id
 GROUP BY
-    p.id, u.name, u.profile_img;  -- u.profile_img 추가
+    p.id, u.name, u.user_id, u.profile_img;  -- u.user_id 추가
+
+
 
 -- 좋아요 목록 뷰 (C-1)
 -- CREATE VIEW liked_posts_view AS

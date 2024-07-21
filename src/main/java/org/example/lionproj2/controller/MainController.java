@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.RecentPostDTO;
 import org.example.lionproj2.dto.TrendingPostDTO;
+import org.example.lionproj2.service.RecentPostService;
 import org.example.lionproj2.service.RecentService;
 import org.example.lionproj2.service.TrendingService;
 import org.example.lionproj2.service.UserProfileService;
@@ -25,6 +26,7 @@ public class MainController {
 
     private final TrendingService trendingService;
     private final RecentService recentService;
+    private final RecentPostService recentPostService;
     private final UserProfileService userService;
     private final UserSessionUtil userSessionUtil;
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -60,7 +62,15 @@ public class MainController {
 
     @GetMapping("/vlog.io/recent")
     public String recentPage(Model model, HttpSession session) {
-        List<RecentPostDTO> recentPosts = recentService.getRecentPosts(0, 20);
+
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            log.warn("User not logged in, redirecting to login page");
+            return "redirect:/login";
+        }
+
+        List<RecentPostDTO> recentPosts = recentService.getRecentPosts( 0, 20);
 
         model.addAttribute("recentPosts", recentPosts);
 

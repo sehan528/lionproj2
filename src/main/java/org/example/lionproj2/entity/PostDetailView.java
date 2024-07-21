@@ -19,12 +19,14 @@ public class PostDetailView {
     private String title;
     private String context;
     private String authorName;
+    @Column(name="author_id")
+    private String authorId;
     @Column(name="author_profile_img")
     private String authorProfileImg;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private String thumbnailUrl;
-    private Boolean isPrivate;
+//    private Boolean isPrivate;
     private Integer likeCount;
     private String tags;
     private String seriesName;

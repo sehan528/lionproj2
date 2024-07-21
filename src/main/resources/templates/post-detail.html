@@ -14,6 +14,10 @@
 
 <div class="container mx-auto px-4 py-8">
     <h1 th:text="${post.title}" class="text-4xl font-bold mb-4">게시글 제목</h1>
+
+<!--    <p th:text="${post.authorId}"> </p>-->
+<!--    <p th:text="${#authentication.name}"> </p>-->
+
     <div class="flex items-center mb-4">
         <img th:src="${post.authorProfileImg}" alt="Author" class="w-10 h-10 rounded-full mr-4">
         <div>
@@ -40,6 +44,13 @@
         </ul>
     </div>
 
+    <div th:if="${post.authorId == #authentication.name}" class="mb-4">
+        <a th:href="@{'/vlog.io/@' + ${post.authorName} + '/' + ${#uris.escapePathSegment(post.title)} + '/edit'}"
+           class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">
+            게시글 수정
+        </a>
+    </div>
+
     <button id="likeButton" th:onclick="'toggleLike(' + ${post.id} + ')'"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
         좋아요 <span id="likeCount" th:text="${post.likeCount}"></span>
@@ -50,10 +61,9 @@
     var isLiked = [[${post.isLiked}]];
     var postId = [[${post.id}]];
     var userId = [[${userId}]];
-    // var postContent = [[${post.context}]];
-    // var postContent = /*[[${postContent}]]*/ '';
-    var postContent = decodeURIComponent(/*[[${postContent}]]*/ '');
 
+
+    var postContent = decodeURIComponent(/*[[${postContent}]]*/ '');
     console.log("Post content:", postContent);
 
 
@@ -83,7 +93,8 @@
         $.ajax({
             url: '/api/v1/posts/' + postId + '/like',
             type: 'POST',
-            data: { userId: userId },
+            contentType: 'application/json',
+            data: JSON.stringify({ userId: userId, postId: postId }),
             success: function(response) {
                 isLiked = response;
                 var likeCount = parseInt($('#likeCount').text());
@@ -100,7 +111,8 @@
         var $likeButton = $('#likeButton');
         if (isLiked) {
             $likeButton.removeClass('bg-blue-500').addClass('bg-red-500');
-            $likeButton.text('좋아요 취소 ' + $('#likeCount').text());
+            $likeButton.text('좋아요 취소 ' );
+            // + $('#likeCount').text()
         } else {
             $likeButton.removeClass('bg-red-500').addClass('bg-blue-500');
             $likeButton.text('좋아요 ' + $('#likeCount').text());

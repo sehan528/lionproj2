@@ -1,6 +1,7 @@
 package org.example.lionproj2.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lionproj2.dto.PostDetailViewDTO;
 import org.example.lionproj2.dto.PostSummaryDTO;
 import org.example.lionproj2.entity.LikeView;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostDetailService {
@@ -119,15 +121,19 @@ public class PostDetailService {
 
     @Transactional
     public Boolean toggleLike(Long userId, Long postId) {
+        log.info("Toggling like for userId: {}, postId: {}", userId, postId);
         Optional<LikeView> existingLike = likeViewRepository.findByUserIdAndPostId(userId, postId);
-
         if (existingLike.isPresent()) {
+            log.info("Removing existing like for userId: {}, postId: {}", userId, postId);
             likeViewRepository.delete(existingLike.get());
             return false;
         } else {
-            LikeView newLike = new LikeView();
-            newLike.setUserId(userId);
-            newLike.setPostId(postId);
+            log.info("Adding new like for userId: {}, postId: {}", userId, postId);
+            LikeView newLike = LikeView.builder()
+                    .userId(userId)
+                    .postId(postId)
+                    .createdAt(LocalDateTime.now())
+                    .build();
             likeViewRepository.save(newLike);
             return true;
         }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByIsPrivateFalseAndUpdateDateGreaterThanEqualOrderByLikesDesc(LocalDateTime startDate, Pageable pageable);
@@ -28,6 +29,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // post period search
     @Query("SELECT p FROM Post p WHERE p.updateDate >= :startDate ORDER BY p.creationDate DESC")
     List<Post> findTrendingPosts(@Param("startDate") LocalDateTime startDate, Pageable pageable);
+
+    Optional<Post> findByAuthorAndTitle(User author, String title);
 }
 
 

@@ -91,5 +91,26 @@ public class UserProfileService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
+    @Transactional
+    public void updateAboutMe(Long userId, String aboutMeContent) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        AboutMe aboutMe = aboutMeRepository.findByUser(user)
+                .orElse(new AboutMe());
+
+        aboutMe.setUser(user);
+        aboutMe.setContext(aboutMeContent);
+
+        aboutMeRepository.save(aboutMe);
+    }
+
+    public String getUserIdByUsername(String username) {
+        log.info("유저 UserId로 Username 찾는 단계 [Service]");
+        return userRepository.findByName(username)
+                .map(User::getUserId)
+                .orElse(null);
+    }
+
 
 }

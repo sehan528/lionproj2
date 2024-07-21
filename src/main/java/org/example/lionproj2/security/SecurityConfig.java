@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,6 +41,10 @@ public class SecurityConfig {
                         .requestMatchers("/vlog.io/setting/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/setting", "/write").authenticated()
                         .requestMatchers(HttpMethod.POST, "/editAboutme", "/uploadProfile", "/editPost").authenticated()
+                        .requestMatchers("/api/v1/user/about").authenticated()
+                        .requestMatchers("/api/v1/posts/*/like").authenticated()
+                        .requestMatchers("/api/v1/posts/*/edit").authenticated()
+                        .requestMatchers("/vlog.io/@**/**").authenticated()  // 추가된 부분
                         .anyRequest().permitAll()
                 )
                 .formLogin((form) -> form
@@ -52,6 +57,15 @@ public class SecurityConfig {
                 .logout((logout) -> logout
                         .logoutSuccessUrl("/login")
                         .permitAll()
+                )
+                .rememberMe(rememberMe -> rememberMe  // 이 부분 추가
+                        .key("uniqueAndSecret")
+                        .tokenValiditySeconds(86400))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/v1/user/about", "/api/v1/posts/*/like", "/api/v1/posts/*/edit")
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)  // 추가된 부분
                 )
                 .userDetailsService(customUserDetailsService);
 
@@ -84,6 +98,4 @@ public class SecurityConfig {
             }
         };
     }
-
-
 }

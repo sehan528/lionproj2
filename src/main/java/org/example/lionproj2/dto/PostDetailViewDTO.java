@@ -15,11 +15,12 @@ public class PostDetailViewDTO {
     private String title;
     private String context;
     private String authorName;
+    private String authorId;
     private String authorProfileImg;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private String thumbnailUrl;
-    private Boolean isPrivate;
+//    private Boolean isPrivate;
     private Integer likeCount;
     private List<String> tags;
     private String seriesName;

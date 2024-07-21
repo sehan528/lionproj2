@@ -17,4 +17,10 @@ public class Tag {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    public Tag(String name) {
+        this.name = name;
+    }
+
+
 }
